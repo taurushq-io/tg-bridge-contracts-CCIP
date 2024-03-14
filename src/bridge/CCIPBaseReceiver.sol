@@ -1,8 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-import "./wrapper/CCIPAllowlistedChain.sol";
-import "./wrapper/CCIPReceiverDefensive.sol"; 
-import "./internal/CCIPRouterManage.sol"; 
+import "./modules/configuration/CCIPAllowlistedChain.sol";
+import "./modules/configuration/CCIPRouterManage.sol"; 
+import "./modules/wrapper/CCIPReceiverDefensive.sol"; 
+
 abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensive, CCIPRouterManage {
     using EnumerableMap for EnumerableMap.Bytes32ToUintMap;
     // Event emitted when a message is received from another chain.
@@ -22,6 +23,9 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
         uint256 tokenAmount // The token amount that was transferred.
     );
 
+    // Get sender
+      //abi.decode(any2EvmMessage.sender, (address))
+
     /// @notice The entrypoint for the CCIP router to call. This function should
     /// never revert, all errors should be handled internally in this contract.
     /// @param any2EvmMessage The message to process.
@@ -33,8 +37,7 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
         override
         onlyRouter
         onlyAllowlisted(
-            any2EvmMessage.sourceChainSelector,
-            abi.decode(any2EvmMessage.sender, (address))
+            any2EvmMessage.sourceChainSelector
         ) // Make sure the source chain and sender are allowlisted
     {
         /* solhint-disable no-empty-blocks */
@@ -54,6 +57,8 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
             return;
         }
     }
+    // Get sender abi.decode(any2EvmMessage.sender, (address))
+
 
     /// @notice Serves as the entry point for this contract to process incoming messages.
     /// @param any2EvmMessage Received CCIP message.
@@ -66,46 +71,24 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
         external
         onlySelf
         onlyAllowlisted(
-            any2EvmMessage.sourceChainSelector,
-            abi.decode(any2EvmMessage.sender, (address))
+            any2EvmMessage.sourceChainSelector
         ) // Make sure the source chain and sender are allowlisted
     {
         // Simulate a revert for testing purposes
         if (s_simRevert) {
-            revert CCIPErrors.ErrorCase();
+            revert CCIPErrors.CCIP_BASE_RECEIVER_ErrorCase();
         }
         _ccipReceive(any2EvmMessage); // process the message - may revert as well
     }
 
      /// handle a received message
-    /*function _ccipReceive(
-        Client.Any2EVMMessage memory any2EvmMessage
-    )
-        internal
-        override
-        onlyAllowlisted(
-            any2EvmMessage.sourceChainSelector,
-            abi.decode(any2EvmMessage.sender, (address))
-        ) // Make sure source chain and sender are allowlisted
-    {
-        // fetch the messageId
-        s_lastReceivedMessageId = any2EvmMessage.messageId; 
-        // abi-decoding of the sent text
-        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); 
-
-        emit MessageReceived(
-            any2EvmMessage.messageId,
-            any2EvmMessage.sourceChainSelector, // fetch the source chain identifier (aka selector)
-            abi.decode(any2EvmMessage.sender, (address)), // abi-decoding of the sender address,
-            abi.decode(any2EvmMessage.data, (string))
-        );
-    }*/
-
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
-        s_lastReceivedMessageId = any2EvmMessage.messageId; // fetch the messageId
-        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string)); // abi-decoding of the sent text
+        // fetch the messageId
+        s_lastReceivedMessageId = any2EvmMessage.messageId; 
+         // abi-decoding of the sent text
+        s_lastReceivedText = abi.decode(any2EvmMessage.data, (string));
         // Expect one token to be transferred at once, but you can transfer several tokens.
         s_lastReceivedTokenAddress = any2EvmMessage.destTokenAmounts[0].token;
         s_lastReceivedTokenAmount = any2EvmMessage.destTokenAmounts[0].amount;

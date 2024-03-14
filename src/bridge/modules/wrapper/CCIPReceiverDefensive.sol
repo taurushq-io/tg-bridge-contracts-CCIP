@@ -3,11 +3,11 @@ pragma solidity ^0.8.20;
 
 import {Client} from "ccip/libraries/Client.sol";
 import {CCIPReceiverInternal} from "../internal/CCIPReceiverInternal.sol";
-import "../../../../modules/AuthorizationModule.sol";
+import "../security/AuthorizationModule.sol";
 import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {EnumerableMap} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/utils/structs/EnumerableMap.sol";
-import "../../libraries/CCIPErrors.sol";
+import "../libraries/CCIPErrors.sol";
 /**
  * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
  * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
@@ -17,7 +17,7 @@ import "../../libraries/CCIPErrors.sol";
 /// @title - A simple messenger contract for transferring/receiving tokens and data across chains.
 /// @dev - This example shows how to recover tokens in case of revert
 abstract contract CCIPReceiverDefensive is CCIPReceiverInternal, AuthorizationModule {
-    bytes32 public constant BRIDGE_MESSAGE_MANAGER = keccak256("BRIDGE_MESSAGE_MANAGER");
+
     using EnumerableMap for EnumerableMap.Bytes32ToUintMap;
     using SafeERC20 for IERC20;
 
@@ -107,7 +107,6 @@ abstract contract CCIPReceiverDefensive is CCIPReceiverInternal, AuthorizationMo
         return allKeys;
     }
 
-   
 
     /// @notice Allows the owner to retry a failed message in order to unblock the associated tokens.
     /// @param messageId The unique identifier of the failed message.
@@ -120,7 +119,7 @@ abstract contract CCIPReceiverDefensive is CCIPReceiverInternal, AuthorizationMo
     ) external onlyRole(BRIDGE_MESSAGE_MANAGER) {
         // Check if the message has failed; if not, revert the transaction.
         if (s_failedMessages.get(messageId) != uint256(ErrorCode.BASIC)){
-            revert CCIPErrors.MessageNotFailed(messageId);
+            revert CCIPErrors.CCIP_RECEIVER_DEFENSIVE_MessageNotFailed(messageId);
         }
         // Set the error code to RESOLVED to disallow reentry and multiple retries of the same failed message.
         s_failedMessages.set(messageId, uint256(ErrorCode.RESOLVED));
