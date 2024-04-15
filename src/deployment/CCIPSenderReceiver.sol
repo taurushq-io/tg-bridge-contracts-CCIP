@@ -3,8 +3,8 @@ pragma solidity ^0.8.20;
 
 import "../bridge/CCIPBaseSender.sol";
 import "../bridge/CCIPBaseReceiver.sol";
-import "../bridge/modules/wrapper/CCIPWithdraw.sol";
-contract CCIPSenderReceiver is CCIPBaseReceiver,CCIPBaseSender, CCIPWithdraw  {
+import "../bridge/modules/wrapper/CCIPContractBalance.sol";
+contract CCIPSenderReceiver is CCIPBaseReceiver,CCIPBaseSender, CCIPContractBalance  {
      constructor(address admin, address _router) CCIPRouterManage(_router) 
     {
         _grantRole(DEFAULT_ADMIN_ROLE, admin);

@@ -1,9 +1,9 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
 import "../bridge/CCIPBaseSender.sol";
-import "../bridge/modules/wrapper/CCIPWithdraw.sol";
+import "../bridge/modules/wrapper/CCIPContractBalance.sol";
 import "openzeppelin-contracts/metatx/ERC2771Context.sol";
-contract CCIPSender is CCIPBaseSender, CCIPWithdraw, ERC2771Context  {
+contract CCIPSender is CCIPBaseSender, CCIPContractBalance, ERC2771Context  {
 
     /**
     * @param admin Address of the contract (Access Control)

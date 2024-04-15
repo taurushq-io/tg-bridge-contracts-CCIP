@@ -4,17 +4,14 @@ import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import "../libraries/CCIPErrors.sol";
 import "../security/AuthorizationModule.sol";
-abstract contract CCIPWithdraw  is AuthorizationModule   {
+abstract contract CCIPContractBalance is AuthorizationModule   {
     using SafeERC20 for IERC20;
     event DepositNativeToken(uint256 amount);
-
-    /// @notice Fallback function to allow the contract to receive native tokens (e.g. Ether).
-    /// @dev This function has no function body, making it a default function for receiving native token.
-    /// It is automatically called when native token is transferred to the contract without any data.
-    //receive() external payable {}
+    event WithdrawNativeTokens(uint256 amount);
+    event WithdrawTokens(uint256 amount);
 
     /**
-    * @notice deposit native tokens.Not possible through the forwarder !!!!!!!!
+    * @notice deposit native tokens. Not possible through the forwarder !!!!!!!!
     */
     function depositNativeTokens() public onlyRole(BRIDGE_DEPOSITOR_ROLE) payable {
         // Generate an error if msg.sender is the forwarder.
@@ -48,6 +45,7 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
         IERC20(_token).safeTransfer(
            _beneficiary,  _amount
         );
+        emit WithdrawTokens(_amount);
     }
     /**
     * @notice withdraw native tokens
@@ -70,5 +68,6 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
         if(!success){
             revert CCIPErrors.CCIP_Withdraw_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
         }
+        emit WithdrawNativeTokens(_amount);
     }
 }
