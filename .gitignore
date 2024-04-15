@@ -1,6 +1,7 @@
 # Compiler files
 cache/
 out/
+docOut/
 
 # Ignores development broadcast logs
 !/broadcast
@@ -16,3 +17,10 @@ docs/
 .vscode
 /node_modules
 bin/
+
+#drawio
+*.bkp
+
+#hardhat
+artifacts/
+cache_hardhat/
