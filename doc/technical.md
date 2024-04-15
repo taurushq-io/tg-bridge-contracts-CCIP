@@ -64,13 +64,15 @@ Please see the OpenGSN [documentation](https://docs.opengsn.org/contracts/#recei
 
 ### UML
 
-![Screenshot from 2024-04-15 10-31-17](../doc/schema/uml.png)
+![CCIP Sender](../doc/schema/uml.png)
 
 
 
 ## Graph
 
+### CCIPSender
 
+![surya_graph_CCIPSender.sol](../doc/schema/surya/surya_graph/surya_graph_CCIPSender.sol.png)
 
 ### CCIPBaseSender
 

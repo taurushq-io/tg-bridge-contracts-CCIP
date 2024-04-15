@@ -48,19 +48,9 @@ Here a summary of the main documentation
 
 The main contract is `CCIPSender`. This contract has to be deployed on each source chain where you want perform transfer.
 
-## Schema
-
-### UML
+The receiver contract (`CCIPSenderReceiver`) and associated contracts are still in development.
 
 ![Screenshot from 2024-04-15 10-31-17](./doc/schema/uml.png)
-
-
-
-### Graph
-
-![surya_graph_CCIPSender.sol](./doc/schema/surya/surya_graph/surya_graph_CCIPSender.sol.png)
-
-
 
 ## Usage
 
