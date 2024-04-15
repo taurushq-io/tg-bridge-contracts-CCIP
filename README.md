@@ -52,7 +52,7 @@ The main contract is `CCIPSender`. This contract has to be deployed on each sour
 
 ### UML
 
-![Screenshot from 2024-04-15 10-31-17](./doc/schema/Screenshot from 2024-04-15 10-31-17.png)
+![Screenshot from 2024-04-15 10-31-17](./doc/schema/uml.png)
 
 
 

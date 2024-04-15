@@ -64,7 +64,7 @@ Please see the OpenGSN [documentation](https://docs.opengsn.org/contracts/#recei
 
 ### UML
 
-![Screenshot from 2024-04-15 10-31-17](../doc/schema/Screenshot from 2024-04-15 10-31-17.png)
+![Screenshot from 2024-04-15 10-31-17](../doc/schema/uml.png)
 
 
 
