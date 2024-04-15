@@ -25,7 +25,8 @@ abstract contract HelperContract is Test{
     address constant ADDRESS2 = address(6);
     address constant ADDRESS3 = address(7);
     address constant TOKEN_PAYMENT_ADMIN = address(8);
-    address constant CCIPSENDER_ADMIN = address(9);
+    address constant CCIPSENDER_ADMIN = address(0x9);
+    address constant RECEIVER_ADDRESS = address(0xA);
     // role string
 
     string constant DEFAULT_ADMIN_ROLE_HASH =

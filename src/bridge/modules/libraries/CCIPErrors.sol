@@ -21,6 +21,7 @@ library CCIPErrors {
     error CCIP_Withdraw_NothingToWithdraw(); // Used when trying to withdraw Ether but there's nothing to withdraw.
     error CCIP_Withdraw_FailedToWithdrawEth(address owner, address target, uint256 value); // Used when the withdrawal of Ether fails.
     error CCIP_Withdraw_Address_Zero_Not_Allowed();
+    error CCIP_Withdraw_DepositNotPossibleWithGasless();
     
     //error SenderNotAllowed(address sender); // Used when the sender has not been allowlisted by the contract owner.
     error OnlySelf(); // Used when a function is called outside of the contract itself.

@@ -24,6 +24,14 @@ contract baseTest is HelperContract {
         );
     }
 
+    // Function to receive Ether. msg.data must be empty
+    receive() external payable {}
+
+
+    // Fallback function is called when msg.data is not empty
+    // Test withdraw
+    fallback() external payable {}
+
     /*********** CCIPAllowlistedChain ***********/
     function testAdminCanSetAvalancheBlockchainAsSourceAndSource() public{
         vm.prank(CCIPSENDER_ADMIN);
@@ -91,5 +99,21 @@ contract baseTest is HelperContract {
         abi.encodeWithSelector(CCIPErrors.CCIP_SenderPayment_TokenAlreadySet.selector));
         vm.prank(CCIPSENDER_ADMIN);
         CCIPSENDER_CONTRACT.setFeePaymentMethod(AVALANCHE_USDC , "USDC");
+    }
+    /*********** CCIPSender withdraw***********/
+        function testAdminCanDepositAndWithdraw() public{
+        // Arrange 
+        vm.deal(CCIPSENDER_ADMIN, 1 ether);
+        // Act
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.depositNativeTokens{value: 1 ether}();
+        // Assert
+        assertEq(CCIPSENDER_ADMIN.balance, 0 ether); 
+        // Act
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.withdrawNativeTokens(RECEIVER_ADDRESS, 1 ether);
+        
+        // Assert
+        assertEq(RECEIVER_ADDRESS.balance, 1 ether); 
     }
 }

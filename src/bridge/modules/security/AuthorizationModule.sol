@@ -35,6 +35,12 @@ abstract contract AuthorizationModule is AccessControl{
     * @notice This role can transfers tokens through the bridge
     */
     bytes32 public constant BRIDGE_OPERATOR_ROLE = keccak256("BRIDGE_OPERATOR_ROLE");
+
+
+    /**
+    * @notice This role can deposit native tokens
+    */
+    bytes32 public constant BRIDGE_DEPOSITOR_ROLE = keccak256("BRIDGE_DEPOSITOR_ROLE");
     
     /*
     * @dev Returns `true` if `account` has been granted `role`.

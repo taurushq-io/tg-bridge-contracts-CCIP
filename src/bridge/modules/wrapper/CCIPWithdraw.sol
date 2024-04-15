@@ -6,11 +6,23 @@ import "../libraries/CCIPErrors.sol";
 import "../security/AuthorizationModule.sol";
 abstract contract CCIPWithdraw  is AuthorizationModule   {
     using SafeERC20 for IERC20;
+    event DepositNativeToken(uint256 amount);
 
     /// @notice Fallback function to allow the contract to receive native tokens (e.g. Ether).
     /// @dev This function has no function body, making it a default function for receiving native token.
     /// It is automatically called when native token is transferred to the contract without any data.
-    receive() external payable {}
+    //receive() external payable {}
+
+    /**
+    * @notice deposit native tokens.Not possible through the forwarder !!!!!!!!
+    */
+    function depositNativeTokens() public onlyRole(BRIDGE_DEPOSITOR_ROLE) payable {
+        // Generate an error if msg.sender is the forwarder.
+        if(_msgSender() != msg.sender){
+            revert CCIPErrors.CCIP_Withdraw_DepositNotPossibleWithGasless();
+        }
+        emit DepositNativeToken(msg.value);
+    }
 
     /**
     * @notice Allows the owner of the contract to withdraw all tokens of a specific ERC20 token, use for example, to pay the gas fee
@@ -18,7 +30,7 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
     * @param _beneficiary The address to which the tokens will be sent.
     * @param _token The contract address of the ERC20 token to be withdrawn.
     */
-    function withdrawToken(
+    function withdrawTokens(
         address _beneficiary,
         address _token,
         uint256 _amount
@@ -42,7 +54,7 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
     * @param _beneficiary token receiver
     * @param _amount value to transfer, if 0, send all contracts balance.
     */
-    function withdrawNativeToken(address _beneficiary, uint256  _amount) public onlyRole(DEFAULT_ADMIN_ROLE){
+    function withdrawNativeTokens(address _beneficiary, uint256  _amount) public onlyRole(DEFAULT_ADMIN_ROLE){
         if(_beneficiary == address(0)){
             revert CCIPErrors.CCIP_Withdraw_Address_Zero_Not_Allowed();
         }
@@ -54,6 +66,7 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
         }
         // External call
         (bool success,)= _beneficiary.call{value:_amount}("");
+
         if(!success){
             revert CCIPErrors.CCIP_Withdraw_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
         }
