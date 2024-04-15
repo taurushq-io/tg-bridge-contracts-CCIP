@@ -4,12 +4,6 @@ pragma solidity ^0.8.20;
 import "../security/AuthorizationModule.sol";
 import "../libraries/CCIPErrors.sol";
 
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
-
 /// @title - Define chain allowed
 abstract contract CCIPAllowlistedChain is AuthorizationModule {
     // Mapping to keep track of allowlisted destination chains.
@@ -22,32 +16,35 @@ abstract contract CCIPAllowlistedChain is AuthorizationModule {
     /// @param _destinationChainSelector The selector of the destination chain.
     modifier onlyAllowlistedDestinationChain(uint64 _destinationChainSelector) {
         if (!allowlistedDestinationChains[_destinationChainSelector])
-            revert CCIPErrors.CCIP_CCIPAllowListedChain_DestinationChainNotAllowlisted(_destinationChainSelector);
+            revert CCIPErrors.CCIP_AllowListedChain_DestinationChainNotAllowlisted(_destinationChainSelector);
         _;
     }
-
+    
     /// @dev Modifier that checks if the chain with the given sourceChainSelector is allowlisted and if the sender is allowlisted.
     /// @param _sourceChainSelector The selector of the destination chain.
     modifier onlyAllowlisted(uint64 _sourceChainSelector) {
         if (!allowlistedSourceChains[_sourceChainSelector]){
-            revert CCIPErrors.CCIP_CCIPAllowListedChain_SourceChainNotAllowlisted(_sourceChainSelector);
+            revert CCIPErrors.CCIP_AllowListedChain_SourceChainNotAllowlisted(_sourceChainSelector);
         }
         _;
     }
 
-    /// @dev Updates the allowlist status of a destination chain for transactions.
-    function allowlistDestinationChain(
-        uint64 _destinationChainSelector,
-        bool allowed
+    /**
+    * @notice Updates the allowlist status of chain for transactions (source and destination).
+    * @param _chainSelector selector from CCIP
+    * @param allowedSourceChain boolean to add(true) or remove(false) the selected blockchain
+    * @param allowedDestinationChain boolean to add(true) or remove(false) the selected blockchain
+    */ 
+    function setAllowlistChain(
+        uint64 _chainSelector,
+        bool allowedSourceChain,
+        bool allowedDestinationChain
     ) external onlyRole(BRIDGE_ALLOWLISTED_CHAIN_MANAGER_ROLE) {
-        allowlistedDestinationChains[_destinationChainSelector] = allowed;
-    }
-
-    /// @dev Updates the allowlist status of a source chain for transactions.
-    function allowlistSourceChain(
-        uint64 _sourceChainSelector,
-        bool allowed
-    ) external onlyRole(BRIDGE_ALLOWLISTED_CHAIN_MANAGER_ROLE) {
-        allowlistedSourceChains[_sourceChainSelector] = allowed;
+        if(allowlistedSourceChains[_chainSelector] !=  allowedSourceChain){
+            allowlistedSourceChains[_chainSelector] = allowedSourceChain;
+        }
+        if( allowlistedDestinationChains[_chainSelector] !=  allowedDestinationChain){
+            allowlistedDestinationChains[_chainSelector] = allowedDestinationChain;
+        }
     }
 }

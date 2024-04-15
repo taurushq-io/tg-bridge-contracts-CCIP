@@ -3,21 +3,19 @@ pragma solidity ^0.8.20;
 import "../bridge/CCIPBaseSender.sol";
 import "../bridge/modules/wrapper/CCIPWithdraw.sol";
 import "openzeppelin-contracts/metatx/ERC2771Context.sol";
-contract CCIPSender is CCIPBaseSender, CCIPWithdraw  {
+contract CCIPSender is CCIPBaseSender, CCIPWithdraw, ERC2771Context  {
 
     /**
     * @param admin Address of the contract (Access Control)
-    * @param _router 
+    * @param routerIrrevocable CCIP router
     * @param forwarderIrrevocable Address of the forwarder, required for the gasless support
-    */forwarderIrrevocable
-    constructor(address admin, address routerIrrevocable, address forwarderIrrevocable) CCIPRouterManage(_router) ERC2771Context(forwarderIrrevocable)
+    */
+    constructor(address admin, address routerIrrevocable, address forwarderIrrevocable) CCIPRouterManage(routerIrrevocable) ERC2771Context(forwarderIrrevocable)
     {
-        if(iszero(admin)){
-            revert CCIP_ADMIN_ADDRESS_ZERO_NOT_ALLOWED();
+        if(address(admin) == address(0)){
+            revert CCIPErrors.CCIP_Admin_Address_Zero_Not_Allowed();
         }
-        if(iszero(routerIrrevocable)){
-            revert CCIP_ROUTER_ADDRESS_ZERO_NOT_ALLOWED();
-        }
+        // Don't check router address since it is done in CCIPRouterManage
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
@@ -53,5 +51,4 @@ contract CCIPSender is CCIPBaseSender, CCIPWithdraw  {
     returns (uint256) {
          return ERC2771Context._contextSuffixLength();
     }
-
 }

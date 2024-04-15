@@ -57,7 +57,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         tokenAmounts[0] = tokenAmount;
         uint256 fees;
         
-        (fees,  messageId) =  buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
+        (fees,  messageId) = buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
         
         emit TokenSingleTransferred(
             messageId,
@@ -87,15 +87,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         returns (bytes32 messageId) 
     {
         Client.EVMTokenAmount[]
-            memory tokenAmounts = new Client.EVMTokenAmount[](_tokens.length);
-        
-        for(uint256 i = 0; i < _tokens.length; ++i ){
-                Client.EVMTokenAmount memory tokenAmount = Client.EVMTokenAmount({
-                token: _tokens[i],
-                amount: _amounts[i]
-            });
-            tokenAmounts[i] = tokenAmount;
-        }
+            memory tokenAmounts = buildTokenAmounts(_tokens, _amounts);
         uint256 fees;
         (fees,  messageId) =  buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
        
@@ -121,12 +113,15 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         // Build the CCIP Message
         Client.EVM2AnyMessage memory message = CCIPSenderBuild._buildCCIPTransferMessage(_receiver, tokenAmounts, _paymentMethodId );
         // Initialize a router client instance to interact with cross-chain router
-        IRouterClient router = IRouterClient(this.getRouter());
+        IRouterClient router = IRouterClient(CCIPRouterManage.getRouter());
         // CCIP Fees Management
         fees = CCIPSenderPayment._computeAndApproveFee(_destinationChainSelector, message, router, _paymentMethodId);
         for(uint256 i = 0; i < tokenAmounts.length; ++i){
             // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
-            IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
+            bool result = IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
+            if(!result){
+                revert CCIPErrors.CCIP_BaseSender_FailApproval();
+            }
         }
         // Send CCIP Message
         messageId = router.ccipSend(_destinationChainSelector, message); 

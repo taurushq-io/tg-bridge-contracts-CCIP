@@ -8,11 +8,6 @@ import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {EnumerableMap} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/utils/structs/EnumerableMap.sol";
 import "../libraries/CCIPErrors.sol";
-/**
- * THIS IS AN EXAMPLE CONTRACT THAT USES HARDCODED VALUES FOR CLARITY.
- * THIS IS AN EXAMPLE CONTRACT THAT USES UN-AUDITED CODE.
- * DO NOT USE THIS CODE IN PRODUCTION.
- */
 
 /// @title - A simple messenger contract for transferring/receiving tokens and data across chains.
 /// @dev - This example shows how to recover tokens in case of revert
@@ -119,7 +114,7 @@ abstract contract CCIPReceiverDefensive is CCIPReceiverInternal, AuthorizationMo
     ) external onlyRole(BRIDGE_MESSAGE_MANAGER) {
         // Check if the message has failed; if not, revert the transaction.
         if (s_failedMessages.get(messageId) != uint256(ErrorCode.BASIC)){
-            revert CCIPErrors.CCIP_RECEIVER_DEFENSIVE_MessageNotFailed(messageId);
+            revert CCIPErrors.CCIP_ReceiverDefensive_MessageNotFailed(messageId);
         }
         // Set the error code to RESOLVED to disallow reentry and multiple retries of the same failed message.
         s_failedMessages.set(messageId, uint256(ErrorCode.RESOLVED));

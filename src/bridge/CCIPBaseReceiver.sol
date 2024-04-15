@@ -76,12 +76,12 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
     {
         // Simulate a revert for testing purposes
         if (s_simRevert) {
-            revert CCIPErrors.CCIP_BASE_RECEIVER_ErrorCase();
+            revert CCIPErrors.CCIP_BaseReceiver_ErrorCase();
         }
         _ccipReceive(any2EvmMessage); // process the message - may revert as well
     }
 
-     /// handle a received message
+    /// handle a received message
     function _ccipReceive(
         Client.Any2EVMMessage memory any2EvmMessage
     ) internal override {
@@ -105,6 +105,5 @@ abstract contract CCIPBaseReceiver is CCIPAllowlistedChain, CCIPReceiverDefensiv
     function supportsInterface(bytes4 interfaceId) public virtual pure override( AuthorizationModule, CCIPReceiverDefensive) 
     returns (bool){
         return (  CCIPReceiverDefensive.supportsInterface(interfaceId) || AuthorizationModule.supportsInterface(interfaceId));
-    
     }
 }

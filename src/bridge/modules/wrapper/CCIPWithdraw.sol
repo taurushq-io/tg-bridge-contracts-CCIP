@@ -23,10 +23,13 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
         address _token,
         uint256 _amount
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if(_beneficiary == address(0)){
+            revert CCIPErrors.CCIP_Withdraw_Address_Zero_Not_Allowed();
+        }
         if( _amount == 0){
               _amount = IERC20(_token).balanceOf(address(this));
              if ( _amount == 0) {
-                revert CCIPErrors.CCIPWithdraw_NothingToWithdraw();
+                revert CCIPErrors.CCIP_Withdraw_NothingToWithdraw();
             }
         }
         // External call
@@ -34,18 +37,25 @@ abstract contract CCIPWithdraw  is AuthorizationModule   {
            _beneficiary,  _amount
         );
     }
-
+    /**
+    * @notice withdraw native tokens
+    * @param _beneficiary token receiver
+    * @param _amount value to transfer, if 0, send all contracts balance.
+    */
     function withdrawNativeToken(address _beneficiary, uint256  _amount) public onlyRole(DEFAULT_ADMIN_ROLE){
+        if(_beneficiary == address(0)){
+            revert CCIPErrors.CCIP_Withdraw_Address_Zero_Not_Allowed();
+        }
         if( _amount == 0){
               _amount = address(this).balance;
              if ( _amount == 0) {
-                revert CCIPErrors.CCIPWithdraw_NothingToWithdraw();
+                revert CCIPErrors.CCIP_Withdraw_NothingToWithdraw();
             }
         }
         // External call
         (bool success,)= _beneficiary.call{value:_amount}("");
         if(!success){
-            revert CCIPErrors.CCIPWithdraw_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
+            revert CCIPErrors.CCIP_Withdraw_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
         }
     }
 }
