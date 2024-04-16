@@ -16,7 +16,7 @@ abstract contract CCIPSenderPayment is AuthorizationModule{
         IERC20 tokenAddress;
     }
     mapping(uint256 => FEE_PAYMENT_TOKEN) public paymentTokens;
-    // List of configures payment
+    // List of configured payment
     mapping(address => bool) public tokenPaymentConfigured;
 
     /**

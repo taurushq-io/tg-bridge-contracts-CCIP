@@ -13,20 +13,25 @@ contract baseTest is HelperContract {
         bool isActivate;
         IERC20 tokenAddress;
     }
-    ERC20Mock erc20;
-    uint64 AVALANCHE_SELECTOR = 6433500567565415381;
-    IERC20 AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
+    ERC20Mock private erc20;
+    uint64 private AVALANCHE_SELECTOR = 6433500567565415381;
+    IERC20 private AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
+    address private ROUTER = address(0x1);
      // Arrange
     function setUp() public {
         // Deploy CCIP Sender
         CCIPSENDER_CONTRACT = new CCIPSender(
             CCIPSENDER_ADMIN,
-            address(0x1),
+            ROUTER,
             ZERO_ADDRESS
         );
         erc20 = new ERC20Mock();
     }
-
+    /*********** Get Router ***********/
+    function testCanGetRouter() public view{
+        address router = CCIPSENDER_CONTRACT.getRouter();
+        assertEq(router,  ROUTER); 
+    }
     /*********** CCIPAllowlistedChain ***********/
     function testAdminCanSetAvalancheBlockchainAsSourceAndSource() public{
         vm.prank(CCIPSENDER_ADMIN);
@@ -94,6 +99,27 @@ contract baseTest is HelperContract {
         abi.encodeWithSelector(CCIPErrors.CCIP_SenderPayment_TokenAlreadySet.selector));
         vm.prank(CCIPSENDER_ADMIN);
         CCIPSENDER_CONTRACT.setFeePaymentMethod(AVALANCHE_USDC , "USDC");
+    }
+
+    function testCanAdminSetTokenNativeAsFee() public{
+        // Act
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
+        // Assert
+        uint256 id;
+        string memory label;
+        bool isActivate;
+        IERC20 tokenAddress;
+        // Assert
+        (id, label, isActivate, tokenAddress) = CCIPSENDER_CONTRACT.paymentTokens(0);
+        assertEq(isActivate, true); 
+    }
+    function testCannotChangeStatusWithInvalidFeeId() public{
+        // Act
+        vm.prank(CCIPSENDER_ADMIN);
+        vm.expectRevert(
+        abi.encodeWithSelector(CCIPErrors.CCIP_SenderPayment_InvalidId.selector));
+        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(10, true);
     }
     /*********** CCIPSender withdraw***********/
     function testAdminCanDepositAndWithdrawNT() public{
@@ -233,5 +259,43 @@ contract baseTest is HelperContract {
         vm.expectRevert(
         abi.encodeWithSelector(CCIPErrors.CCIP_SenderBuild_TokensIsEmpty.selector));
         CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
+    }
+
+    function testCanBuildCCIPTransferMessageForOneToken() public{
+        // Arrange
+        uint256 value = 1000;
+        address[] memory _tokens = new address[](1);
+        uint256[] memory _amounts = new uint256[](1);
+        _tokens[0] = address(erc20);
+        _amounts[0] = value;
+        
+        Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
+        
+        // Act
+        Client.EVM2AnyMessage memory message = CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0);
+
+        // Assert
+        assertEq(abi.decode(message.receiver, (address)), RECEIVER_ADDRESS);
+        assertEq(message.data, abi.encode(""));
+        assertEq(tokenAmounts[0].token, address(erc20));
+        assertEq(value, tokenAmounts[0].amount);
+    }
+
+    function testCannotBuildCCIPTransferMessageForOneTokenIfInvalidFee() public{
+        // Arrange
+        uint256 value = 1000;
+        address[] memory _tokens = new address[](1);
+        uint256[] memory _amounts = new uint256[](1);
+        _tokens[0] = address(erc20);
+        _amounts[0] = value;
+        
+        Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
+        
+        // Act
+        vm.expectRevert(
+        abi.encodeWithSelector(CCIPErrors.CCIP_SenderBuild_InvalidFeeId.selector));
+        CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0);
     }
 }

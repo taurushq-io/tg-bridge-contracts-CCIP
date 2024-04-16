@@ -31,6 +31,19 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
     /// @param _receiver The address of the receiver.
     /// @param _tokenAmounts Value amounts of tokens to be sent
     /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
+    function buildCCIPTransferMessage(
+        address _receiver,
+        Client.EVMTokenAmount[] memory  _tokenAmounts,
+        uint256 paymentMethodId
+    ) public view returns (Client.EVM2AnyMessage memory) {
+        return _buildCCIPTransferMessage(_receiver, _tokenAmounts,paymentMethodId );
+    } 
+
+    /// @notice Construct a CCIP message.
+    /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
+    /// @param _receiver The address of the receiver.
+    /// @param _tokenAmounts Value amounts of tokens to be sent
+    /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
     function _buildCCIPMessage(
         address _receiver,
         string memory _text,
@@ -65,19 +78,7 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
         } else {
             revert CCIPErrors.CCIP_SenderBuild_InvalidFeeId();
         }
+        // TODO: add a configurable parameter here
         return _buildCCIPMessage(_receiver, "", _tokenAmounts, 400_000, feeToken);
     }
-
-    /// @notice Construct a CCIP message.
-    /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
-    /// @param _receiver The address of the receiver.
-    /// @param _tokenAmounts Value amounts of tokens to be sent
-    /// @return Client.EVM2AnyMessage Returns an EVM2AnyMessage struct which contains information for sending a CCIP message.
-    function buildCCIPTransferMessage(
-        address _receiver,
-        Client.EVMTokenAmount[] memory  _tokenAmounts,
-        uint256 paymentMethodId
-    ) public view returns (Client.EVM2AnyMessage memory) {
-        return _buildCCIPTransferMessage(_receiver, _tokenAmounts,paymentMethodId );
-    } 
 }
