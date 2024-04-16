@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2024-04-15 14:20:26</td>
+            <td class="headerValue">2024-04-16 13:42:24</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -74,8 +74,8 @@
 <a name="3"><span class="lineNum">       3 </span>                :            : </a>
 <a name="4"><span class="lineNum">       4 </span>                :            : import &quot;../bridge/CCIPBaseSender.sol&quot;;</a>
 <a name="5"><span class="lineNum">       5 </span>                :            : import &quot;../bridge/CCIPBaseReceiver.sol&quot;;</a>
-<a name="6"><span class="lineNum">       6 </span>                :            : import &quot;../bridge/modules/wrapper/CCIPWithdraw.sol&quot;;</a>
-<a name="7"><span class="lineNum">       7 </span>                :            : contract CCIPSenderReceiver is CCIPBaseReceiver,CCIPBaseSender, CCIPWithdraw  {</a>
+<a name="6"><span class="lineNum">       6 </span>                :            : import &quot;../bridge/modules/wrapper/CCIPContractBalance.sol&quot;;</a>
+<a name="7"><span class="lineNum">       7 </span>                :            : contract CCIPSenderReceiver is CCIPBaseReceiver,CCIPBaseSender, CCIPContractBalance  {</a>
 <a name="8"><span class="lineNum">       8 </span>                :            :      constructor(address admin, address _router) CCIPRouterManage(_router) </a>
 <a name="9"><span class="lineNum">       9 </span>                :            :     {</a>
 <a name="10"><span class="lineNum">      10 </span>                :            :         _grantRole(DEFAULT_ADMIN_ROLE, admin);</a>

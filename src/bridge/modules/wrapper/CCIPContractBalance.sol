@@ -16,7 +16,7 @@ abstract contract CCIPContractBalance is AuthorizationModule   {
     function depositNativeTokens() public onlyRole(BRIDGE_DEPOSITOR_ROLE) payable {
         // Generate an error if msg.sender is the forwarder.
         if(_msgSender() != msg.sender){
-            revert CCIPErrors.CCIP_Withdraw_DepositNotPossibleWithGasless();
+            revert CCIPErrors.CCIP_ContractBalance_DepositNotPossibleWithGasless();
         }
         emit DepositNativeToken(msg.value);
     }
@@ -32,13 +32,13 @@ abstract contract CCIPContractBalance is AuthorizationModule   {
         address _token,
         uint256 _amount
     ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        if(_beneficiary == address(0)){
-            revert CCIPErrors.CCIP_Withdraw_Address_Zero_Not_Allowed();
+        if(_beneficiary == address(0) || _token == address(0)){
+            revert CCIPErrors.CCIP_ContractBalance_Address_Zero_Not_Allowed();
         }
         if( _amount == 0){
               _amount = IERC20(_token).balanceOf(address(this));
              if ( _amount == 0) {
-                revert CCIPErrors.CCIP_Withdraw_NothingToWithdraw();
+                revert CCIPErrors.CCIP_ContractBalance_NothingToWithdraw();
             }
         }
         // External call
@@ -54,19 +54,19 @@ abstract contract CCIPContractBalance is AuthorizationModule   {
     */
     function withdrawNativeTokens(address _beneficiary, uint256  _amount) public onlyRole(DEFAULT_ADMIN_ROLE){
         if(_beneficiary == address(0)){
-            revert CCIPErrors.CCIP_Withdraw_Address_Zero_Not_Allowed();
+            revert CCIPErrors.CCIP_ContractBalance_Address_Zero_Not_Allowed();
         }
         if( _amount == 0){
               _amount = address(this).balance;
              if ( _amount == 0) {
-                revert CCIPErrors.CCIP_Withdraw_NothingToWithdraw();
+                revert CCIPErrors.CCIP_ContractBalance_NothingToWithdraw();
             }
         }
         // External call
         (bool success,)= _beneficiary.call{value:_amount}("");
 
         if(!success){
-            revert CCIPErrors.CCIP_Withdraw_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
+            revert CCIPErrors.CCIP_ContractBalance_FailedToWithdrawEth(_msgSender(), _beneficiary,  _amount);
         }
         emit WithdrawNativeTokens(_amount);
     }

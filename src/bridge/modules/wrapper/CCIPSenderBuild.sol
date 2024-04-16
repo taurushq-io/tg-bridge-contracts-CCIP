@@ -4,6 +4,28 @@ import "../libraries/CCIPErrors.sol";
 import "../configuration/CCIPSenderPayment.sol";
 abstract contract CCIPSenderBuild is CCIPSenderPayment{
 
+    function buildTokenAmounts(
+    address[] memory _tokens,
+    uint256[] memory _amounts) public pure returns (Client.EVMTokenAmount[] memory tokenAmounts){
+        if( _tokens.length == 0){
+            revert CCIPErrors.CCIP_SenderBuild_TokensIsEmpty();
+        }
+        if(_tokens.length != _amounts.length){
+            revert CCIPErrors.CCIP_SenderBuild_LengthMismatch();
+        }
+        tokenAmounts = new Client.EVMTokenAmount[](_tokens.length);
+        for(uint256 i = 0; i < _tokens.length; ++i ){
+            if(_tokens[i] == address(0)){
+                revert CCIPErrors.CCIP_SenderBuild_Address_Zero_Not_Allowed();
+            }
+            Client.EVMTokenAmount memory tokenAmount = Client.EVMTokenAmount({
+                token: _tokens[i],
+                amount: _amounts[i]
+            });
+            tokenAmounts[i] = tokenAmount;
+        }
+    } 
+
     /// @notice Construct a CCIP message.
     /// @dev This function will create an EVM2AnyMessage struct with all the necessary information for sending a text.
     /// @param _receiver The address of the receiver.
@@ -57,18 +79,5 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
         uint256 paymentMethodId
     ) public view returns (Client.EVM2AnyMessage memory) {
         return _buildCCIPTransferMessage(_receiver, _tokenAmounts,paymentMethodId );
-    }
-
-    function buildTokenAmounts(
-        address[] memory _tokens,
-        uint256[] memory _amounts) public pure returns (Client.EVMTokenAmount[] memory tokenAmounts){
-            tokenAmounts = new Client.EVMTokenAmount[](_tokens.length);
-            for(uint256 i = 0; i < _tokens.length; ++i ){
-                    Client.EVMTokenAmount memory tokenAmount = Client.EVMTokenAmount({
-                    token: _tokens[i],
-                    amount: _amounts[i]
-                });
-                tokenAmounts[i] = tokenAmount;
-            }
-        }  
+    } 
 }

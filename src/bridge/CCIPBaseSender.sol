@@ -28,8 +28,6 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         uint256 fees // The fees paid for sending the message.
     );
 
-
-
     /*
     * @notice transfer `_amount` of the same token.
     * @param _receiver address on the destination blockchain
@@ -89,7 +87,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         Client.EVMTokenAmount[]
             memory tokenAmounts = buildTokenAmounts(_tokens, _amounts);
         uint256 fees;
-        (fees,  messageId) =  buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
+        (fees,  messageId) = buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
        
         emit TokensBatchTransferred(
             messageId,

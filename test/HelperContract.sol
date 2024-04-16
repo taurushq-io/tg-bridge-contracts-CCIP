@@ -1,14 +1,15 @@
 //SPDX-License-Identifier: MPL-2.0
-import "../src/deployment/CCIPSender.sol";
-import "../src/bridge/modules/libraries/CCIPErrors.sol";
 pragma solidity ^0.8.20;
 
+import "src/deployment/CCIPSender.sol";
+import "src/bridge/modules/libraries/CCIPErrors.sol";
+import "src/bridge/modules/security/AuthorizationModule.sol";
 import "forge-std/Test.sol";
 
 /**
 * @title Constants used by the tests
 */
-abstract contract HelperContract is Test{
+abstract contract HelperContract is Test, AuthorizationModule{
     uint256 resUint256;
     bool resBool;
     CCIPSender CCIPSENDER_CONTRACT;
