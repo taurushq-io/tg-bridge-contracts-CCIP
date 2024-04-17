@@ -11,20 +11,16 @@ contract RouterTest is HelperContract {
     error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
     error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
 
-    struct FEE_PAYMENT_TOKEN {
-        uint256 id;
-        string label;
-        bool isActivate;
-        IERC20 tokenAddress;
-    }
     ERC20Mock private erc20;
+    ERC20Mock private erc20Fee;
     
-    uint64 private AVALANCHE_SELECTOR = 6433500567565415381;
-    IERC20 private AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
     MockCCIPRouter private ROUTER;
+    uint256 feePaymentId = 1;
+    uint256 FEE_MINT = 1000;
      // Arrange
     function setUp() public {
         erc20 = new ERC20Mock();
+        erc20Fee = new ERC20Mock();
         address[] memory supportedTokens = new address[](1);
         supportedTokens[0] = address(erc20);
         ROUTER = new MockCCIPRouter( supportedTokens );
@@ -36,6 +32,7 @@ contract RouterTest is HelperContract {
             ZERO_ADDRESS
         );
     }
+    
     /*********** Get Router ***********/
     function testCanGetRouter() public  view {
         address router = CCIPSENDER_CONTRACT.getRouter();
@@ -49,13 +46,16 @@ contract RouterTest is HelperContract {
 
     function _configurefee() internal {
         vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
+        CCIPSENDER_CONTRACT.setFeePaymentMethod(IERC20(address(erc20Fee)) , "FEE_TOKEN");
+
+        resBool = CCIPSENDER_CONTRACT.tokenPaymentConfigured(address(erc20Fee));
+        assertEq(resBool, true); 
     }
 
-    function _configureBalanceNativeToken() internal {
-        vm.deal(CCIPSENDER_ADMIN, 1 ether);
+    function _configureBalanceTokenFee() internal {
+        erc20Fee.mint(address(CCIPSENDER_ADMIN), FEE_MINT);
         vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.depositNativeTokens{value: 1 ether}();
+        erc20Fee.transfer(address(CCIPSENDER_CONTRACT), FEE_MINT);
     }
 
     function _configureAllowListedChain() internal {
@@ -72,7 +72,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
          _configurefee();
         // Step 2 - Configure balance native token
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 3 - configure destination chain
          _configureAllowListedChain();
         uint256 value = 1000;
@@ -80,8 +80,7 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         erc20.approve(address(CCIPSENDER_CONTRACT), value);
         vm.prank(CCIPSENDER_ADMIN);
-        bytes32 messageId = CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
-       // assertEq(tokens[0], address(erc20)); 
+        bytes32 messageId = CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, feePaymentId);
                
         // Check messageId
         // Arrange
@@ -93,7 +92,7 @@ contract RouterTest is HelperContract {
         // Assert messageId
         Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
         
-        bytes32 mockMsgId =  keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0)));
+        bytes32 mockMsgId =  keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, feePaymentId)));
         assertEq(messageId, mockMsgId); 
     }
 
@@ -113,11 +112,11 @@ contract RouterTest is HelperContract {
         erc20.mint(CCIPSENDER_ADMIN,value);
         erc20Second.mint(CCIPSENDER_ADMIN,valueSecond);
              
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 1 - configure fee
          _configurefee();
         // Step 2 - Configure balance native token
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 3 - configure destination chain
          _configureAllowListedChain();
    
@@ -127,15 +126,12 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         erc20Second.approve(address(CCIPSENDER_CONTRACT), valueSecond);
         vm.prank(CCIPSENDER_ADMIN);
-        bytes32 messageId = CCIPSENDER_CONTRACT.transferTokensBatch(AVALANCHE_SELECTOR, RECEIVER_ADDRESS,  _tokens, _amounts, 0);
-       // assertEq(tokens[0], address(erc20)); 
-               
-        // Check messageId
-        
+        bytes32 messageId = CCIPSENDER_CONTRACT.transferTokensBatch(AVALANCHE_SELECTOR, RECEIVER_ADDRESS,  _tokens, _amounts, feePaymentId);
+
         // Assert messageId
         Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
         
-        bytes32 mockMsgId =  keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0)));
+        bytes32 mockMsgId =  keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, feePaymentId)));
         assertEq(messageId, mockMsgId); 
     }
 
@@ -147,7 +143,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
          _configurefee();
         // Step 2 - we do not do the deposit
-        //_configureBalanceNativeToken();
+        //_configureBalanceTokenFee();
         // Step 3 - configure destination chain
         _configureAllowListedChain();
         uint256 value = 1000;
@@ -157,8 +153,7 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         vm.expectRevert(
         abi.encodeWithSelector(CCIPErrors.CCIP_SenderPayment_ContractNotEnoughBalance.selector, address(CCIPSENDER_CONTRACT).balance, 10 ));
-        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
-       // assertEq(tokens[0], address(erc20)); 
+        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value,  feePaymentId);
     }
 
     function testCannotTransferTokensIfFeesAreNotConfigured() public {
@@ -169,7 +164,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
         // _configurefee();
         // Step 2 - we do not do the deposit
-        //_configureBalanceNativeToken();
+        //_configureBalanceTokenFee();
         // Step 3 - configure destination chain
         _configureAllowListedChain();
         uint256 value = 1000;
@@ -179,8 +174,7 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         vm.expectRevert(
         abi.encodeWithSelector(CCIPErrors.CCIP_SenderBuild_InvalidFeeId.selector));
-        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
-       // assertEq(tokens[0], address(erc20)); 
+        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value,  feePaymentId);
     }
 
 
@@ -192,7 +186,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
         _configurefee();
         // Step 2 - we do not do the deposit
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 3 - configure destination chain
         //        vm.prank(CCIPSENDER_ADMIN);
         //CCIPSENDER_CONTRACT.setAllowlistChain(AVALANCHE_SELECTOR, false, true);
@@ -203,8 +197,7 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         vm.expectRevert(
         abi.encodeWithSelector(CCIPErrors.CCIP_AllowListedChain_DestinationChainNotAllowlisted.selector, AVALANCHE_SELECTOR));
-        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
-       // assertEq(tokens[0], address(erc20)); 
+        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value,  feePaymentId);
     }
     function testCannotTransferTokensIfTokensAllowanceNotEnough() public {
         uint256 ERC20_SENDER_BALANCE = 2000;
@@ -214,7 +207,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
         _configurefee();
         // Step 2 - we do not do the deposit
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 3 - configure destination chain
         _configureAllowListedChain();
         uint256 value = 1000;
@@ -224,8 +217,7 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         vm.expectRevert(
         abi.encodeWithSelector(ERC20InsufficientAllowance.selector, address(CCIPSENDER_CONTRACT), 0, value));
-        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
-       // assertEq(tokens[0], address(erc20)); 
+        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value,  feePaymentId);
     }
 
     function testCannotTransferTokensIfSenderBalanceNotEnough() public {
@@ -235,7 +227,7 @@ contract RouterTest is HelperContract {
         // Step 1 - configure fee
         _configurefee();
         // Step 2 - we do not do the deposit
-        _configureBalanceNativeToken();
+        _configureBalanceTokenFee();
         // Step 3 - configure destination chain
         _configureAllowListedChain();
         uint256 value = 1000;
@@ -245,6 +237,6 @@ contract RouterTest is HelperContract {
         vm.prank(CCIPSENDER_ADMIN);
         vm.expectRevert(
         abi.encodeWithSelector(ERC20InsufficientBalance.selector, 0x9, 0, value));
-        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
+        CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value,  feePaymentId);
     }
 }

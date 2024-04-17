@@ -7,15 +7,7 @@ import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/tok
 import {ERC20Mock} from "openzeppelin-contracts/mocks/token/ERC20Mock.sol";
 import {Client} from "ccip/libraries/Client.sol";
 contract baseTest is HelperContract {
-    struct FEE_PAYMENT_TOKEN {
-        uint256 id;
-        string label;
-        bool isActivate;
-        IERC20 tokenAddress;
-    }
     ERC20Mock private erc20;
-    uint64 private AVALANCHE_SELECTOR = 6433500567565415381;
-    IERC20 private AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
     address private ROUTER = address(0x1);
      // Arrange
     function setUp() public {
@@ -101,19 +93,6 @@ contract baseTest is HelperContract {
         CCIPSENDER_CONTRACT.setFeePaymentMethod(AVALANCHE_USDC , "USDC");
     }
 
-    function testCanAdminSetTokenNativeAsFee() public{
-        // Act
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
-        // Assert
-        uint256 id;
-        string memory label;
-        bool isActivate;
-        IERC20 tokenAddress;
-        // Assert
-        (id, label, isActivate, tokenAddress) = CCIPSENDER_CONTRACT.paymentTokens(0);
-        assertEq(isActivate, true); 
-    }
     function testCannotChangeStatusWithInvalidFeeId() public{
         // Act
         vm.prank(CCIPSENDER_ADMIN);
@@ -122,42 +101,6 @@ contract baseTest is HelperContract {
         CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(10, true);
     }
     /*********** CCIPSender withdraw***********/
-    function testAdminCanDepositAndWithdrawNT() public{
-        // Arrange 
-        vm.deal(CCIPSENDER_ADMIN, 1 ether);
-        // Act
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.depositNativeTokens{value: 1 ether}();
-        // Assert
-        assertEq(CCIPSENDER_ADMIN.balance, 0 ether); 
-        // Act
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.withdrawNativeTokens(RECEIVER_ADDRESS, 1 ether);
-        
-        // Assert
-        assertEq(RECEIVER_ADDRESS.balance, 1 ether); 
-    }
-
-    function testAdminCannotWithdrawNTToTheZeroAddress() public{
-        // Arrange 
-        vm.deal(CCIPSENDER_ADMIN, 1 ether);
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.depositNativeTokens{value: 1 ether}();
-
-        // Act
-        vm.expectRevert(
-        abi.encodeWithSelector(CCIPErrors.CCIP_ContractBalance_Address_Zero_Not_Allowed.selector));
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.withdrawNativeTokens(ZERO_ADDRESS, 1 ether);
-    }
-
-    function testAdminCannotWithdrawNTAllIfContractBalanceIsZero() public{
-        // Act
-        vm.expectRevert(
-        abi.encodeWithSelector(CCIPErrors.CCIP_ContractBalance_NothingToWithdraw.selector));
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.withdrawNativeTokens(RECEIVER_ADDRESS, 0 ether);
-    }
 
     /*** ERC 20 tokens */
     function testAdminCanDepositAndWithdraw() public{
@@ -261,41 +204,4 @@ contract baseTest is HelperContract {
         CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
     }
 
-    function testCanBuildCCIPTransferMessageForOneToken() public{
-        // Arrange
-        uint256 value = 1000;
-        address[] memory _tokens = new address[](1);
-        uint256[] memory _amounts = new uint256[](1);
-        _tokens[0] = address(erc20);
-        _amounts[0] = value;
-        
-        Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
-        vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
-        
-        // Act
-        Client.EVM2AnyMessage memory message = CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0);
-
-        // Assert
-        assertEq(abi.decode(message.receiver, (address)), RECEIVER_ADDRESS);
-        assertEq(message.data, abi.encode(""));
-        assertEq(tokenAmounts[0].token, address(erc20));
-        assertEq(value, tokenAmounts[0].amount);
-    }
-
-    function testCannotBuildCCIPTransferMessageForOneTokenIfInvalidFee() public{
-        // Arrange
-        uint256 value = 1000;
-        address[] memory _tokens = new address[](1);
-        uint256[] memory _amounts = new uint256[](1);
-        _tokens[0] = address(erc20);
-        _amounts[0] = value;
-        
-        Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
-        
-        // Act
-        vm.expectRevert(
-        abi.encodeWithSelector(CCIPErrors.CCIP_SenderBuild_InvalidFeeId.selector));
-        CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, 0);
-    }
 }

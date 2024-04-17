@@ -28,10 +28,21 @@ abstract contract HelperContract is Test, AuthorizationModule{
     address constant TOKEN_PAYMENT_ADMIN = address(8);
     address constant CCIPSENDER_ADMIN = address(0x9);
     address constant RECEIVER_ADDRESS = address(0xA);
+
+    uint64 AVALANCHE_SELECTOR = 6433500567565415381;
+    IERC20 AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
     // role string
 
     string constant DEFAULT_ADMIN_ROLE_HASH =
         "0x0000000000000000000000000000000000000000000000000000000000000000";
 
+
+    // Import
+    struct FEE_PAYMENT_TOKEN {
+        uint256 id;
+        string label;
+        bool isActivate;
+        IERC20 tokenAddress;
+    }
     constructor() {}
 }

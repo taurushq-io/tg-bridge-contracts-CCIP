@@ -1,6 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
-
+import "../HelperContract.sol";
 import {IRouter} from "ccip/interfaces/IRouter.sol";
 import {IRouterClient} from "ccip/interfaces/IRouterClient.sol";
 import {IAny2EVMMessageReceiver} from "ccip/interfaces/IAny2EVMMessageReceiver.sol";
@@ -13,11 +13,14 @@ import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {ERC165Checker} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/utils/introspection/ERC165Checker.sol";
 
-contract MockCCIPRouter is IRouter, IRouterClient {
+contract MockCCIPRouter is IRouter, IRouterClient,   HelperContract {
 
-    constructor(address[] memory supportedTokens_){
-        supportedTokens = supportedTokens_;
-    }
+  constructor(address[] memory supportedTokens_){
+      supportedTokens = supportedTokens_;
+  }
+
+  // add this to be excluded from coverage report
+  function test() public {}
 
 ////Token address
 address[] supportedTokens;

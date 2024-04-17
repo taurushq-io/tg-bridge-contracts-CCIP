@@ -6,14 +6,6 @@ import "./HelperContract.sol";
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {Client} from "ccip/libraries/Client.sol";
 contract baseTest is HelperContract {
-    struct FEE_PAYMENT_TOKEN {
-        uint256 id;
-        string label;
-        bool isActivate;
-        IERC20 tokenAddress;
-    }
-    uint64 AVALANCHE_SELECTOR = 6433500567565415381;
-    IERC20 AVALANCHE_USDC = IERC20(0xB97EF9Ef8734C71904D8002F8b6Bc66Dd9c48a6E);
      // Arrange
     function setUp() public {
         // Deploy CCIP Sender
@@ -23,8 +15,6 @@ contract baseTest is HelperContract {
             ZERO_ADDRESS
         );
     }
-
-
     /*********** CCIPAllowlistedChain ***********/
     function testCannotAttakerSetAvalancheBlockchainAsSourceAndSource() public{
         vm.expectRevert(

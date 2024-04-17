@@ -122,9 +122,6 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         for(uint256 i = 0; i < tokenAmounts.length; ++i){
         // transfer tokens to the contract
         IERC20(tokenAmounts[i].token).safeTransferFrom(_msgSender(), address(this), tokenAmounts[i].amount);
-        /*if(!result){
-                revert CCIPErrors.CCIP_BaseSender_FailSafeTransferFrom();
-        }*/
         // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
         bool result = IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
         if(!result){
