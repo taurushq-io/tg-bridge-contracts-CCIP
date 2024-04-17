@@ -53,9 +53,20 @@ contract baseTest is HelperContract {
         resBool = CCIPSENDER_CONTRACT.allowlistedDestinationChains(AVALANCHE_SELECTOR);
         assertEq(resBool, false); 
     }
-
+    event GasLimit(uint256 newGasLimit);
 
     /*********** CCIPSender Payment ***********/
+    function testAdminCanSetGasLimit() public{ 
+        uint256 newGasLimit = 256;
+        vm.expectEmit(false, false, false, true);
+        emit GasLimit(
+           newGasLimit
+        );
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.setGasLimit(newGasLimit);
+        uint256 gasLimit = CCIPSENDER_CONTRACT.gasLimit();
+        assertEq(gasLimit, newGasLimit); 
+    }
     function testAdminCanSetFeePaymentMethod() public{
         vm.prank(CCIPSENDER_ADMIN);
         CCIPSENDER_CONTRACT.setFeePaymentMethod(AVALANCHE_USDC , "USDC");

@@ -78,7 +78,6 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
         } else {
             revert CCIPErrors.CCIP_SenderBuild_InvalidFeeId();
         }
-        // TODO: add a configurable parameter here
-        return _buildCCIPMessage(_receiver, "", _tokenAmounts, 400_000, feeToken);
+        return _buildCCIPMessage(_receiver, "", _tokenAmounts, gasLimit, feeToken);
     }
 }

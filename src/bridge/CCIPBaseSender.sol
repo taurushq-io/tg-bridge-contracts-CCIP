@@ -131,6 +131,4 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         // Send CCIP Message
         messageId = router.ccipSend(_destinationChainSelector, message); 
     }
-
-    
 }

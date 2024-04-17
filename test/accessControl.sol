@@ -32,6 +32,13 @@ contract baseTest is HelperContract {
 
 
     /*********** CCIPSender Payment ***********/
+    function testCannotAttackerSetGasLimit() public{
+        vm.expectRevert(
+        abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, ATTACKER,  BRIDGE_OPERATOR_ROLE));  
+        vm.prank(ATTACKER);
+        CCIPSENDER_CONTRACT.setGasLimit(1000);
+    }
+
     function testCannotAttackerSetFeePaymentMethod() public{
         vm.expectRevert(
         abi.encodeWithSelector(AccessControlUnauthorizedAccount.selector, ATTACKER,  BRIDGE_OPERATOR_ROLE));  

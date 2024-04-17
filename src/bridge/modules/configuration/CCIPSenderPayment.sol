@@ -15,9 +15,19 @@ abstract contract CCIPSenderPayment is AuthorizationModule{
         bool isActivate;
         IERC20 tokenAddress;
     }
+    event GasLimit(uint256 newGasLimit);
     mapping(uint256 => FEE_PAYMENT_TOKEN) public paymentTokens;
     // List of configured payment
     mapping(address => bool) public tokenPaymentConfigured;
+    /**
+    * @notice
+    * @dev set to zero since no receiver contract
+    */
+    uint256 public gasLimit = 0;
+    function setGasLimit(uint256 gasLimit_) public onlyRole(BRIDGE_OPERATOR_ROLE){
+        gasLimit = gasLimit_;
+        emit GasLimit(gasLimit_);
+    }   
 
     /**
     * @notice set the fee payment

@@ -55,10 +55,4 @@ abstract contract AuthorizationModule is AccessControl{
         }
         return AccessControl.hasRole(role, account);
     }
-
-    function supportsInterface(bytes4 interfaceId) public pure virtual override(AccessControl) 
-    returns (bool){
-         return interfaceId == type(IAccessControl).interfaceId;
-    
-    }
 }

@@ -131,7 +131,7 @@ contract RouterTest is HelperContract {
         // Assert messageId
         Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
         
-        bytes32 mockMsgId =  keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, feePaymentId)));
+        bytes32 mockMsgId = keccak256(abi.encode(CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, feePaymentId)));
         assertEq(messageId, mockMsgId); 
     }
 
