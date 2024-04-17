@@ -17,6 +17,7 @@ library CCIPErrors {
     error CCIP_AllowListedChain_SourceChainNotAllowlisted(uint64 sourceChainSelector); 
 
     error CCIP_BaseSender_FailApproval();
+    error CCIP_BaseSender_FailSafeTransferFrom();
 
     error CCIP_ContractBalance_NothingToWithdraw(); // Used when trying to withdraw Ether but there's nothing to withdraw.
     error CCIP_ContractBalance_FailedToWithdrawEth(address owner, address target, uint256 value); // Used when the withdrawal of Ether fails.
@@ -39,7 +40,7 @@ library CCIPErrors {
     error CCIP_SenderBuild_TokensIsEmpty();
 
     // Used to make sure contract has enough balance to cover the fees.
-    error CCIP_SenderPayment_NotEnoughBalance(uint256 currentBalance, uint256 calculatedFees); 
+    error CCIP_SenderPayment_ContractNotEnoughBalance(uint256 currentBalance, uint256 calculatedFees); 
     error CCIP_SenderPayment_TokenAlreadySet(); 
     error CCIP_SenderPayment_InvalidId(); 
     error CCIP_SenderPayment_FailApproval();

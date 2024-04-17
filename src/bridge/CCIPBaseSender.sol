@@ -3,10 +3,11 @@ pragma solidity ^0.8.20;
 
 import "./modules/wrapper/CCIPSenderBuild.sol";
 import {Client} from "ccip/libraries/Client.sol";
-
+import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import "./modules/configuration/CCIPRouterManage.sol"; 
 import "./modules/configuration/CCIPAllowlistedChain.sol";
 abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPRouterManage {
+    using SafeERC20 for IERC20;
     // Event emitted when tokens are transfered
     event TokenSingleTransferred(
         bytes32 indexed messageId, // The unique ID of the message.
@@ -43,7 +44,9 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         uint256 _amount,
         uint256 _paymentMethodId
     ) 
-        external onlyRole(BRIDGE_USER_ROLE)
+        external 
+        onlyRole(BRIDGE_USER_ROLE)
+        onlyAllowlistedDestinationChain(_destinationChainSelector)
         returns (bytes32 messageId) 
     {
         Client.EVMTokenAmount[]
@@ -55,7 +58,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         tokenAmounts[0] = tokenAmount;
         uint256 fees;
         
-        (fees,  messageId) = buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
+        (fees,  messageId) = _buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
         
         emit TokenSingleTransferred(
             messageId,
@@ -81,13 +84,15 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         uint256[] memory _amounts,
         uint256 _paymentMethodId
     ) 
-        external onlyRole(BRIDGE_USER_ROLE)
+        external 
+        onlyRole(BRIDGE_USER_ROLE) 
+        onlyAllowlistedDestinationChain(_destinationChainSelector)
         returns (bytes32 messageId) 
     {
         Client.EVMTokenAmount[]
             memory tokenAmounts = buildTokenAmounts(_tokens, _amounts);
         uint256 fees;
-        (fees,  messageId) = buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
+        (fees,  messageId) = _buildEndSend(_destinationChainSelector, _receiver, _paymentMethodId, tokenAmounts);
        
         emit TokensBatchTransferred(
             messageId,
@@ -107,7 +112,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
     * @param _paymentMethodId id to select the payment
     * @param tokenAmounts array for each token
     */
-    function buildEndSend(uint64 _destinationChainSelector, address _receiver,  uint256 _paymentMethodId,  Client.EVMTokenAmount[] memory tokenAmounts) internal returns(uint256 fees, bytes32 messageId){
+    function _buildEndSend(uint64 _destinationChainSelector, address _receiver,  uint256 _paymentMethodId,  Client.EVMTokenAmount[] memory tokenAmounts) internal returns(uint256 fees, bytes32 messageId){
         // Build the CCIP Message
         Client.EVM2AnyMessage memory message = CCIPSenderBuild._buildCCIPTransferMessage(_receiver, tokenAmounts, _paymentMethodId );
         // Initialize a router client instance to interact with cross-chain router
@@ -115,11 +120,16 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         // CCIP Fees Management
         fees = CCIPSenderPayment._computeAndApproveFee(_destinationChainSelector, message, router, _paymentMethodId);
         for(uint256 i = 0; i < tokenAmounts.length; ++i){
-            // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
-            bool result = IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
-            if(!result){
-                revert CCIPErrors.CCIP_BaseSender_FailApproval();
-            }
+        // transfer tokens to the contract
+        IERC20(tokenAmounts[i].token).safeTransferFrom(_msgSender(), address(this), tokenAmounts[i].amount);
+        /*if(!result){
+                revert CCIPErrors.CCIP_BaseSender_FailSafeTransferFrom();
+        }*/
+        // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
+        bool result = IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
+        if(!result){
+            revert CCIPErrors.CCIP_BaseSender_FailApproval();
+        }
         }
         // Send CCIP Message
         messageId = router.ccipSend(_destinationChainSelector, message); 

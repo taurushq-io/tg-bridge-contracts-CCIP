@@ -64,7 +64,7 @@ abstract contract CCIPSenderPayment is AuthorizationModule{
             // External call
             uint256 contractBalance = paymentTokens[paymentMethodId].tokenAddress.balanceOf(address(this));
             if (fees > contractBalance){
-                revert CCIPErrors.CCIP_SenderPayment_NotEnoughBalance(contractBalance, fees);
+                revert CCIPErrors.CCIP_SenderPayment_ContractNotEnoughBalance(contractBalance, fees);
             }
             // External call
             bool result = paymentTokens[paymentMethodId].tokenAddress.approve(address(router), fees);
@@ -75,7 +75,7 @@ abstract contract CCIPSenderPayment is AuthorizationModule{
         } else { // Native token
             uint256 contractBalance = address(this).balance;
             if (fees > contractBalance){
-                revert CCIPErrors.CCIP_SenderPayment_NotEnoughBalance(contractBalance, fees);
+                revert CCIPErrors.CCIP_SenderPayment_ContractNotEnoughBalance(contractBalance, fees);
             }
         }
         return fees;

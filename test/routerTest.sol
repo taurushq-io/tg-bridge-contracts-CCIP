@@ -39,8 +39,41 @@ contract RouterTest is HelperContract {
         assertEq(router,  address(ROUTER)); 
     }
 
-    function testCanGetSupportedTokens() public  view {
+    function testCanGetSupportedTokens() public {
         address[] memory tokens = CCIPSENDER_CONTRACT.getSupportedTokens(0);
         assertEq(tokens[0], address(erc20)); 
+    }
+
+
+    function testCanTransferTokens() public {
+        uint256 ERC20_SENDER_BALANCE = 2000;
+        // arrange
+        // Step 0 - token balance
+        erc20.mint(CCIPSENDER_ADMIN,ERC20_SENDER_BALANCE);
+        // Act
+        //vm.prank(CCIPSENDER_ADMIN);
+        //CCIPSENDER_CONTRACT.depositTokens(address(erc20), value);
+        //vm.prank(CCIPSENDER_ADMIN);
+        //erc20.transfer(address(CCIPSENDER_CONTRACT), ERC20_SENDER_BALANCE);
+
+        // assert
+        //assertEq(erc20.balanceOf(address(CCIPSENDER_CONTRACT)), ERC20_SENDER_BALANCE); 
+        // Step 1 - configure fee
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(0, true);
+        // Step 2 - Configure balance native token
+        vm.deal(CCIPSENDER_ADMIN, 1 ether);
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.depositNativeTokens{value: 1 ether}();
+        // Step 3 - configure destination chain
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.setAllowlistChain(AVALANCHE_SELECTOR, false, true);
+        uint256 value = 1000;
+        // Step 4 - configure allowance
+        vm.prank(CCIPSENDER_ADMIN);
+        erc20.approve(address(CCIPSENDER_CONTRACT), value);
+        vm.prank(CCIPSENDER_ADMIN);
+        bytes32 messageId = CCIPSENDER_CONTRACT.transferTokens(AVALANCHE_SELECTOR, RECEIVER_ADDRESS, address(erc20), value, 0);
+       // assertEq(tokens[0], address(erc20)); 
     }
 }
