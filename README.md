@@ -14,6 +14,86 @@ More information in the [CCIP Chainlink website](https://docs.chain.link/ccip) a
 
 The main reference is the [CCIP masterclass](https://andrej-rakic.gitbook.io/chainlink-ccip/ccip-masterclass/exercise-1-transfer-tokens)
 
+## Configuration and use
+
+To allow bidirectional transactions, you have to deploy the sender contract in each blockchain.
+
+For example, to bridge between Polygon<-> Aval
+
+After deployment, the first step is to set the link between Polygon and Avalanche
+
+### Allow list chains
+
+We will allow Avalanche to be a destination chain. We call the function `setAllowlistChain` to do this.
+
+```solidity
+function setAllowlistChain(uint64 _chainSelector, bool allowedSourceChain, bool allowedDestinationChain) 
+```
+
+ Example:
+
+```solidity
+setAllowlistChain(6433500567565415381, false, true)
+```
+
+And Polygon too
+
+```solidity
+setAllowlistChain(4051577828743386545, false, true)
+```
+
+The configuration for source chain is only useful if we use a receiver contract also, but this is not the case for the moment.
+
+ 
+
+### Activate Fee tokens
+
+We will now set the fee payment for our two senders contracts.
+
+For Polygon, we will authorize to pay the fees in Matic, the Polygon PoS native token
+
+For Avalanche, we will authorize to pay the fees in Avax, the Avalanche native token.
+
+The selected id for native token is zero, the function has to be called in the two blockchains
+
+```solidity
+changeStatusFeePaymentMethod(0, true);
+```
+
+For non-native token, we use another function `setFeePaymentMethod`: 
+
+```solidity
+function setFeePaymentMethod(IERC20 tokenAddress_, string calldata  label_)
+```
+
+### Authorize user to use the contracts
+
+Our function `transferTokens` from our sender contract is protected by an access control. Only authorized users can transfer tokens. You have to grant the corresponding role to your brider's users.
+
+```solidity
+grantRole(bytes32 role, address account)
+```
+
+Example:
+
+```solidity
+grantRole(`b0f04d2e44f4b417ab78712b52802767b073e39f75dba9f6e3a31125b053f026`, <Sender address>)
+```
+
+### Fund the sender contract
+
+It is important to fund our sender contract to pay the fees.
+
+For that, we will call the function ` depositNativeTokens()` with our account holding native tokens.
+
+### Approve the sender contract
+
+With our bridge user, we authorize the bridge to transfer our tokens in our name.
+
+This is done with the classic ERC-20 `approve` function.
+
+
+
 ## Module
 
 We have divided the code into several components called modules. Each module is responsible to perform specific task.
@@ -26,7 +106,7 @@ We have divided the code into several components called modules. Each module is 
 |               | AuthorizationModule  | Manage the access control                                    |
 | Wrappers      |                      |                                                              |
 |               | CCIPSenderBuild      | Build a CCIP message                                         |
-|               | CCIP Withdraw        | Withdraw native and fee tokens from the contracts            |
+|               | CCIPContractBalance  | Withdraw native and fee tokens from the contracts            |
 | Configuration |                      |                                                              |
 |               | CCIPAllowlistedChain | Set and define the blockchain supported by the sender contract. |
 |               | CCIPRouterManage     | Store the router contracts address and associated functions  |
