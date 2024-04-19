@@ -1,30 +1,30 @@
 # CCIPSender
 
-> This project is not audited. It is a PoC to interact with the CCIP bridge
+> This project is a proof-of-concept to demonstration interactions with the CCIP bridge.
 > 
->If you want to use this project, perform your own verification !
+> It's not designed to be production code, it's not security-audited, use at your own risk.
 
-# Overview
+## Overview
 
 A sender contract serves as an entrypoint between your end user and the router contract from Chainlink. This contract is under your control and can be used to offer more possibility of customization.
 
 The sender contract will be the main entrypoint for your user to bridge tokens. It will contain all the logic to transfer tokens and send messages.
 
-More information in the [CCIP Chainlink website](https://docs.chain.link/ccip) and in the library CCIP in github [smartcontractkit/ccip](https://github.com/smartcontractkit/ccip)
+More information is available in the [CCIP Chainlink website](https://docs.chain.link/ccip) and in the library CCIP in github [smartcontractkit/ccip](https://github.com/smartcontractkit/ccip)
 
 The main reference is the [CCIP masterclass](https://andrej-rakic.gitbook.io/chainlink-ccip/ccip-masterclass/exercise-1-transfer-tokens)
 
-## Configuration and use
+## Configuration and usage
 
-To allow bidirectional transactions, you have to deploy the sender contract in each blockchain.
+To allow bidirectional transactions, you must deploy the sender contract on each blockchain.
 
-For example, to bridge between Polygon<-> Aval
+Let's look at the example of a bridge between Polygon and Avalanche.
 
-After deployment, the first step is to set the link between Polygon and Avalanche
+After deployment of the contracts, the first step is to establish the link between Polygon and Avalanche.
 
 ### Allow list chains
 
-We will allow Avalanche to be a destination chain. We call the function `setAllowlistChain` to do this.
+We will allow Avalanche to be a destination chain. We call the function `setAllowlistChain()` to do this.
 
 ```solidity
 function setAllowlistChain(uint64 _chainSelector, bool allowedSourceChain, bool allowedDestinationChain) 
@@ -42,17 +42,16 @@ And Polygon too
 setAllowlistChain(4051577828743386545, false, true)
 ```
 
-The configuration for source chain is only useful if we use a receiver contract also, but this is not the case for the moment.
+The configuration of the source chain is only useful if we use a receiver contract, but this is not the case for the moment.
 
- 
 
-### Activate Fee tokens
+### Activate fee tokens
 
 We will now set the fee payment for our two senders contracts.
 
-For Polygon, we will authorize to pay the fees in Matic, the Polygon PoS native token
+For Polygon, we will authorize to pay the fees in MATIC, the Polygon PoS native token
 
-For Avalanche, we will authorize to pay the fees in Avax, the Avalanche native token.
+For Avalanche, we will authorize to pay the fees in AVAX, the Avalanche native token.
 
 The selected id for native token is zero, the function has to be called in the two blockchains
 
@@ -93,10 +92,9 @@ With our bridge user, we authorize the bridge to transfer our tokens in our name
 This is done with the classic ERC-20 `approve` function.
 
 
-
 ## Module
 
-We have divided the code into several components called modules. Each module is responsible to perform specific task.
+We divided the code into several components called modules. Each module is responsible to perform specific task.
 
 | **Group**     | **Contract name**    | **Description**                                              |
 | :------------ | :------------------- | :----------------------------------------------------------- |
@@ -126,7 +124,7 @@ Here a summary of the main documentation
 
 ## Deployment
 
-The main contract is `CCIPSender`. This contract has to be deployed on each source chain where you want perform transfer.
+The main contract is `CCIPSender`. This contract has to be deployed on each source chain where you want perform transfers.
 
 ![Screenshot from 2024-04-15 10-31-17](./doc/schema/uml.png)
 
@@ -206,3 +204,7 @@ forge coverage --report lcov && genhtml lcov.info --branch-coverage --output-dir
 ```
 
 See [Solidity Coverage in VS Code with Foundry](https://mirror.xyz/devanon.eth/RrDvKPnlD-pmpuW7hQeR5wWdVjklrpOgPCOA-PJkWFU) & [Foundry forge coverage](https://www.rareskills.io/post/foundry-forge-coverage)
+
+## Intellectual property
+
+The original code is copyright (c) Taurus 2024, and is released under [MIT license](LICENSE).
