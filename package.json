@@ -8,7 +8,18 @@
     "test": "test"
   },
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint:sol": "npx solium -d src",
+    "lint:sol:fix": "npx solium -d src --fix",
+    "lint:sol:test": "npx solium -d test",
+    "lint:sol:test:fix": "npx solium -d test --fix",
+    "lint:sol:script": "npx solium -d script",
+    "lint:sol:script:fix": "npx solium -d script --fix",
+    "lint:sol:prettier": "npx prettier --write 'src/**/*.sol' 'test/**/*.sol' 'script/**/*.sol'",
+    "uml": "npx sol2uml class src",
+    "uml:test": "npx sol2uml class test",
+    "surya:report": "npx surya mdreport surya_report_debtVault.md src/DebtVault.sol",
+    "surya:graph": "npx surya graph  src/bridge/CCIPBaseSender.sol | dot -Tpng > surya_graph_CCIPBaseSender.png ",
+    "docgen": "npx hardhat docgen"
   },
   "repository": {
     "type": "git",
@@ -21,8 +32,12 @@
   },
   "homepage": "https://github.com/taurusgroup/tg-bridge-contract-solidity#readme",
   "devDependencies": {
+    "@nomicfoundation/hardhat-foundry": "^1.0.1",
     "slither": "^0.2.2",
     "sol2uml": "^2.5.16",
-    "surya": "^0.4.6"
+    "surya": "^0.4.6",
+    "solidity-docgen": "^0.6.0-beta.35",
+    "prettier-plugin-solidity": "^1.0.0-rc.1",
+    "ethlint": "^1.2.5"
   }
 }

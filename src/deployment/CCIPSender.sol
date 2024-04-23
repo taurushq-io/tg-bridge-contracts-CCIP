@@ -1,50 +1,54 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.20;
-//import "../bridge/BridgeVault.sol";
-import "../bridge/modules/CCIP/modules/CCIPBaseSender.sol";
-import "../bridge/modules/CCIP/modules/CCIPBaseReceiver.sol";
+import "../bridge/CCIPBaseSender.sol";
+import "../bridge/modules/wrapper/CCIPContractBalance.sol";
+import "openzeppelin-contracts/metatx/ERC2771Context.sol";
+contract CCIPSender is CCIPBaseSender, CCIPContractBalance, ERC2771Context  {
 
-contract CCIPSender is CCIPBaseReceiver,CCIPBaseSender  {
-    // Custom errors to provide more descriptive revert messages.
-
-    // CCIPBaseSender(_link) 
-     constructor(address admin, address _router, address /*_link*/) CCIPRouterManage(_router) 
+    /**
+    * @param admin Address of the contract (Access Control)
+    * @param routerIrrevocable CCIP router
+    * @param forwarderIrrevocable Address of the forwarder, required for the gasless support
+    */
+    constructor(address admin, address routerIrrevocable, address forwarderIrrevocable) CCIPRouterManage(routerIrrevocable) ERC2771Context(forwarderIrrevocable)
     {
+        if(address(admin) == address(0)){
+            revert CCIPErrors.CCIP_Admin_Address_Zero_Not_Allowed();
+        }
+        // Don't check router address since it is done in CCIPRouterManage
         _grantRole(DEFAULT_ADMIN_ROLE, admin);
     }
 
-    /**
-    * @param chainSelector blockchain selector
-    * @return tokens list of contract address for all supported tokens
+    /** 
+    * @dev This surcharge is not necessary if you do not use the MetaTx
     */
-    function getSupportedTokens(
-        uint64 chainSelector
-    ) external view returns (address[] memory tokens) {
-        tokens = IRouterClient(i_router).getSupportedTokens(chainSelector);
+    function _msgSender()
+        internal
+        view
+        override(ERC2771Context, Context)
+        returns (address sender)
+    {
+        return ERC2771Context._msgSender();
     }
 
-    /**
-    * @notice Allows the owner of the contract to withdraw all tokens of a specific ERC20 token, use for example, to pay the gas fee
-    * @dev This function reverts with a 'NothingToWithdraw' error if there are no tokens to withdraw.
-    * @param _beneficiary The address to which the tokens will be sent.
-    * @param _token The contract address of the ERC20 token to be withdrawn.
+    /** 
+    * @dev This surcharge is not necessary if you do not use the MetaTx
     */
-    function withdrawToken(
-        address _beneficiary,
-        address _token
-    ) public onlyRole(DEFAULT_ADMIN_ROLE) {
-        uint256 amount = IERC20(_token).balanceOf(address(this));
-        
-        if (amount == 0) {
-            revert CCIPErrors.NothingToWithdraw();
-        }
-        // Check return value ?
-        IERC20(_token).transfer(_beneficiary, amount);
+    function _msgData()
+        internal
+        view
+        override(ERC2771Context, Context)
+        returns (bytes calldata)
+    {
+        return ERC2771Context._msgData();
     }
 
-    function supportsInterface(bytes4 interfaceId) public virtual pure override( AuthorizationModule, CCIPBaseReceiver) 
-    returns (bool){
-        return (  CCIPBaseReceiver.supportsInterface(interfaceId) || AuthorizationModule.supportsInterface(interfaceId));
-    
+    /** 
+    * @dev This surcharge is not necessary if you do not use the MetaTx
+    */
+    function _contextSuffixLength() internal view 
+    override(ERC2771Context, Context)
+    returns (uint256) {
+         return ERC2771Context._contextSuffixLength();
     }
 }
