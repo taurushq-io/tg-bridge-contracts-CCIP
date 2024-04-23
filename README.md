@@ -126,7 +126,7 @@ Here a summary of the main documentation
 
 The main contract is `CCIPSender`. This contract has to be deployed on each source chain where you want perform transfers.
 
-![Screenshot from 2024-04-15 10-31-17](./doc/schema/uml.png)
+![UML](./doc/schema/uml.png)
 
 ## Usage
 

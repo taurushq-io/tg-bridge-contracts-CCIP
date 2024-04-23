@@ -14,13 +14,13 @@ You don't need to deploy contracts in the destination chain.
 
 To allow a source and destination chains, you have to call the following function
 
-```bash
+```solidity
 function setAllowlistChain(uint64 _chainSelector,bool allowedSourceChain, boolallowedDestinationChain) 
 ```
 
  Example for Avalanche:
 
-```
+```solidity
 setAllowlistChain(6433500567565415381, true, true)
 ```
 
@@ -28,13 +28,13 @@ setAllowlistChain(6433500567565415381, true, true)
 
 Our function `transferTokens` from our sender contract is protected by an access control. Only authorized user can transfer tokens. Therefore we will authorize our
 
-```
+```solidity
 grantRole(bytes32 role, address account)
 ```
 
 Example
 
-```
+```solidity
 grantRole(`b0f04d2e44f4b417ab78712b52802767b073e39f75dba9f6e3a31125b053f026`, <Sender address>)
 ```
 
