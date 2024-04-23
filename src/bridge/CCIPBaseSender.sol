@@ -123,10 +123,7 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         // transfer tokens to the contract
         IERC20(tokenAmounts[i].token).safeTransferFrom(_msgSender(), address(this), tokenAmounts[i].amount);
         // approve the Router to spend tokens on contract's behalf. It will spend the amount of the given token
-        bool result = IERC20(tokenAmounts[i].token).approve(address(router), tokenAmounts[i].amount);
-        if(!result){
-            revert CCIPErrors.CCIP_BaseSender_FailApproval();
-        }
+        IERC20(tokenAmounts[i].token).safeIncreaseAllowance(address(router), tokenAmounts[i].amount);
         }
         // Send CCIP Message
         messageId = router.ccipSend(_destinationChainSelector, message); 

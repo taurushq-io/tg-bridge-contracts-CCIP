@@ -2,12 +2,14 @@
 pragma solidity ^0.8.20;
 
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/utils/SafeERC20.sol";
 import {Client} from "ccip/libraries/Client.sol";
 import {IRouterClient} from "ccip/interfaces/IRouterClient.sol";
 import "../libraries/CCIPErrors.sol";
 import "../security/AuthorizationModule.sol";
 
 abstract contract CCIPSenderPayment is AuthorizationModule{
+    using SafeERC20 for IERC20;
     uint256 private paymentIdCounter = 1;
     struct FEE_PAYMENT_TOKEN {
         uint256 id;
@@ -77,11 +79,7 @@ abstract contract CCIPSenderPayment is AuthorizationModule{
                 revert CCIPErrors.CCIP_SenderPayment_ContractNotEnoughBalance(contractBalance, fees);
             }
             // External call
-            bool result = paymentTokens[paymentMethodId].tokenAddress.approve(address(router), fees);
-            if(!result){
-                revert CCIPErrors.CCIP_SenderPayment_FailApproval();
-            }
-
+            paymentTokens[paymentMethodId].tokenAddress.safeIncreaseAllowance(address(router), fees);
         } else { // Native token
             uint256 contractBalance = address(this).balance;
             if (fees > contractBalance){
