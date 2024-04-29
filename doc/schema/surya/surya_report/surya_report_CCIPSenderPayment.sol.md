@@ -16,6 +16,8 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **CCIPSenderPayment** | Implementation | AuthorizationModule |||
+| └ | setMessageGasLimit | Public ❗️ | 🛑  | onlyRole |
+| └ | setMessageData | Public ❗️ | 🛑  | onlyRole |
 | └ | setFeePaymentMethod | Public ❗️ | 🛑  | onlyRole |
 | └ | isValidPaymentId | Internal 🔒 |   | |
 | └ | changeStatusFeePaymentMethod | Public ❗️ | 🛑  | onlyRole |

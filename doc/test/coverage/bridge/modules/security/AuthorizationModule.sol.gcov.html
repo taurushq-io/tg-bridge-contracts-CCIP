@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2024-04-17 17:59:19</td>
+            <td class="headerValue">2024-04-26 14:53:42</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">0</td>
@@ -121,10 +121,10 @@
 <a name="50"><span class="lineNum">      50 </span>                :            :         address account</a>
 <a name="51"><span class="lineNum">      51 </span>                :            :     ) public view virtual override(AccessControl) returns (bool) {</a>
 <a name="52"><span class="lineNum">      52 </span>                :            :         // The Default Admin has all roles</a>
-<a name="53"><span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 0 was taken 67 times"> + </span><span class="branchCov" title="Branch 1 was taken 6 times"> + </span>]:<span class="lineCov">        146 :         if (AccessControl.hasRole(DEFAULT_ADMIN_ROLE, account)) {</span></a>
-<a name="54"><span class="lineNum">      54 </span>                :<span class="lineCov">        134 :             return true;</span></a>
+<a name="53"><span class="lineNum">      53 </span>        [<span class="branchCov" title="Branch 0 was taken 69 times"> + </span><span class="branchCov" title="Branch 1 was taken 7 times"> + </span>]:<span class="lineCov">        152 :         if (AccessControl.hasRole(DEFAULT_ADMIN_ROLE, account)) {</span></a>
+<a name="54"><span class="lineNum">      54 </span>                :<span class="lineCov">        138 :             return true;</span></a>
 <a name="55"><span class="lineNum">      55 </span>                :            :         }</a>
-<a name="56"><span class="lineNum">      56 </span>                :<span class="lineCov">         18 :         return AccessControl.hasRole(role, account);</span></a>
+<a name="56"><span class="lineNum">      56 </span>                :<span class="lineCov">         21 :         return AccessControl.hasRole(role, account);</span></a>
 <a name="57"><span class="lineNum">      57 </span>                :            :     }</a>
 <a name="58"><span class="lineNum">      58 </span>                :            : }</a>
 </pre>

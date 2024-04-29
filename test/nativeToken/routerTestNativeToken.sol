@@ -8,6 +8,7 @@ import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/tok
 import {ERC20Mock} from "openzeppelin-contracts/mocks/token/ERC20Mock.sol";
 import {Client} from "ccip/libraries/Client.sol";
 contract RouterTest is HelperContract {
+    uint256  NATIVE_TOKEN_SELECTION = 0;
     error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
     error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);
 
@@ -39,6 +40,29 @@ contract RouterTest is HelperContract {
         uint64 chainSelector = 0;
         address[] memory tokens = CCIPSENDER_CONTRACT.getSupportedTokens(chainSelector);
         assertEq(tokens[0], address(erc20)); 
+    }
+
+    function testCanGetFees() public {
+        // Arrange
+        uint256 value = 1000;
+        address[] memory _tokens = new address[](1);
+        uint256[] memory _amounts = new uint256[](1);
+        _tokens[0] = address(erc20);
+        _amounts[0] = value;
+
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.changeStatusFeePaymentMethod(feePaymentId, true);
+        
+        Client.EVMTokenAmount[] memory tokenAmounts = CCIPSENDER_CONTRACT.buildTokenAmounts(_tokens, _amounts);
+  
+        // Act
+        Client.EVM2AnyMessage memory message = CCIPSENDER_CONTRACT.buildCCIPTransferMessage(RECEIVER_ADDRESS, tokenAmounts, NATIVE_TOKEN_SELECTION);
+
+        // From router mock
+        uint64 chainSelector = 0;
+        uint256 fees = CCIPSENDER_CONTRACT.getFee(chainSelector, message);
+
+        assertEq(fees,10); 
     }
 
     function _configurefee() internal {

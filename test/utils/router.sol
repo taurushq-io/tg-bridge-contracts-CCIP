@@ -14,10 +14,13 @@ import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/tok
 import {ERC165Checker} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/utils/introspection/ERC165Checker.sol";
 
 contract MockCCIPRouter is IRouter, IRouterClient,   HelperContract {
+  //error InsufficientFeeTokenAmount();
+ // error  InvalidMsgValue();
 
-  constructor(address[] memory supportedTokens_){
+   constructor(address[] memory supportedTokens_){
       supportedTokens = supportedTokens_;
   }
+
 
   // add this to be excluded from coverage report
   function test() public {}
@@ -79,9 +82,15 @@ address[] supportedTokens;
   /// @dev Returns a mock message ID, which is not calculated from the message contents in the
   /// same way as the real message ID.
   function ccipSend(
-    uint64, // destinationChainSelector
+    uint64 destinationChainSelector,
     Client.EVM2AnyMessage calldata message
   ) external payable returns (bytes32) {
+    uint256 feeTokenAmount = getFee(destinationChainSelector, message);
+    if (message.feeToken == address(0)) {
+        if (msg.value < feeTokenAmount) revert InsufficientFeeTokenAmount();
+    } else{
+        if (msg.value > 0) revert InvalidMsgValue();
+    }
     if (message.receiver.length != 32) revert InvalidAddress(message.receiver);
     uint256 decodedReceiver = abi.decode(message.receiver, (uint256));
     // We want to disallow sending to address(0) and to precompiles, which exist on address(1) through address(9).
@@ -129,7 +138,7 @@ address[] supportedTokens;
   }
 
   /// @notice Returns 10
-  function getFee(uint64, Client.EVM2AnyMessage memory) external pure returns (uint256 fee) {
+  function getFee(uint64, Client.EVM2AnyMessage memory) public pure returns (uint256 fee) {
     return 10;
   }
 

@@ -95,7 +95,7 @@ OR
 - CCIPSender
 
 ```bash
-npx surya graph  src/CCIPSender.sol | dot -Tpng > surya_graph_CCIPSender.png
+npx surya graph  src/deployment/CCIPSender.sol | dot -Tpng > surya_graph_CCIPSender.png
 ```
 
 #### Report

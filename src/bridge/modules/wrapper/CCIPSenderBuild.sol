@@ -50,7 +50,7 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
         Client.EVMTokenAmount[] memory  _tokenAmounts,
         uint256 gasLimit_,
         address feeToken_
-    ) internal pure returns (Client.EVM2AnyMessage memory) {
+    ) public pure returns (Client.EVM2AnyMessage memory) {
         return Client.EVM2AnyMessage({
             receiver: abi.encode(_receiver),
             data: abi.encode(_text),
@@ -71,13 +71,13 @@ abstract contract CCIPSenderBuild is CCIPSenderPayment{
         address _receiver,
         Client.EVMTokenAmount[] memory  _tokenAmounts,
         uint256 paymentMethodId
-    ) internal view returns (Client.EVM2AnyMessage memory) {
+    ) public view returns (Client.EVM2AnyMessage memory) {
         address feeToken = address(0);
         if(paymentTokens[paymentMethodId].isActivate){
             feeToken = address(paymentTokens[paymentMethodId].tokenAddress);
         } else {
             revert CCIPErrors.CCIP_SenderBuild_InvalidFeeId();
         }
-        return _buildCCIPMessage(_receiver, "", _tokenAmounts, gasLimit, feeToken);
+        return _buildCCIPMessage(_receiver, messageData, _tokenAmounts, messageGasLimit, feeToken);
     }
 }

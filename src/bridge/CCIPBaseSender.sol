@@ -126,6 +126,11 @@ abstract contract CCIPBaseSender is CCIPAllowlistedChain, CCIPSenderBuild, CCIPR
         IERC20(tokenAmounts[i].token).safeIncreaseAllowance(address(router), tokenAmounts[i].amount);
         }
         // Send CCIP Message
-        messageId = router.ccipSend(_destinationChainSelector, message); 
+        if(_paymentMethodId == 0){ // Native token
+            messageId = router.ccipSend{value: fees}(_destinationChainSelector, message); 
+        } else{
+            messageId = router.ccipSend(_destinationChainSelector, message); 
+        }
+
     }
 }

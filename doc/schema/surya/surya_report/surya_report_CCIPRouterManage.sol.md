@@ -19,6 +19,7 @@
 | └ | <Constructor> | Public ❗️ | 🛑  |NO❗️ |
 | └ | getRouter | Public ❗️ |   |NO❗️ |
 | └ | getSupportedTokens | External ❗️ |   |NO❗️ |
+| └ | getFee | Public ❗️ |   |NO❗️ |
 
 
 ### Legend

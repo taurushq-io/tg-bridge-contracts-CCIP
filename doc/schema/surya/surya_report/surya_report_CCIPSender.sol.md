@@ -15,7 +15,7 @@
 |:----------:|:-------------------:|:----------------:|:----------------:|:---------------:|
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
-| **CCIPSender** | Implementation | CCIPBaseSender, CCIPWithdraw, ERC2771Context |||
+| **CCIPSender** | Implementation | CCIPBaseSender, CCIPContractBalance, ERC2771Context |||
 | └ | <Constructor> | Public ❗️ | 🛑  | CCIPRouterManage ERC2771Context |
 | └ | _msgSender | Internal 🔒 |   | |
 | └ | _msgData | Internal 🔒 |   | |

@@ -5,7 +5,7 @@
 
 |  File Name  |  SHA-1 Hash  |
 |-------------|--------------|
-| ./bridge/modules/internal/CCIPReceiverInternal.sol | [object Promise] |
+| ./bridge/modules/wrapper/CCIPContractBalance.sol | [object Promise] |
 
 
 ### Contracts Description Table
@@ -15,9 +15,10 @@
 |:----------:|:-------------------:|:----------------:|:----------------:|:---------------:|
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
-| **CCIPReceiverInternal** | Implementation | IAny2EVMMessageReceiver, IERC165 |||
-| └ | supportsInterface | Public ❗️ |   |NO❗️ |
-| └ | _ccipReceive | Internal 🔒 | 🛑  | |
+| **CCIPContractBalance** | Implementation | AuthorizationModule |||
+| └ | depositNativeTokens | Public ❗️ |  💵 | onlyRole |
+| └ | withdrawTokens | Public ❗️ | 🛑  | onlyRole |
+| └ | withdrawNativeTokens | Public ❗️ | 🛑  | onlyRole |
 
 
 ### Legend

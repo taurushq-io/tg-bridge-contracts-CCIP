@@ -9,6 +9,7 @@ import {Client} from "ccip/libraries/Client.sol";
 contract baseTest is HelperContract {
     ERC20Mock private erc20;
     address private ROUTER = address(0x1);
+    event MessageData(string newMessageData);
      // Arrange
     function setUp() public {
         // Deploy CCIP Sender
@@ -53,19 +54,31 @@ contract baseTest is HelperContract {
         resBool = CCIPSENDER_CONTRACT.allowlistedDestinationChains(AVALANCHE_SELECTOR);
         assertEq(resBool, false); 
     }
-    event GasLimit(uint256 newGasLimit);
+    event MessageGasLimit(uint256 newMessageGasLimit);
 
     /*********** CCIPSender Payment ***********/
-    function testAdminCanSetGasLimit() public{ 
-        uint256 newGasLimit = 256;
+    function testAdminCanSetMessageGasLimit() public{ 
+        uint256 newMessageGasLimit = 256;
         vm.expectEmit(false, false, false, true);
-        emit GasLimit(
-           newGasLimit
+        emit MessageGasLimit(
+           newMessageGasLimit
         );
         vm.prank(CCIPSENDER_ADMIN);
-        CCIPSENDER_CONTRACT.setGasLimit(newGasLimit);
-        uint256 gasLimit = CCIPSENDER_CONTRACT.gasLimit();
-        assertEq(gasLimit, newGasLimit); 
+        CCIPSENDER_CONTRACT.setMessageGasLimit(newMessageGasLimit);
+        uint256 gasLimit = CCIPSENDER_CONTRACT.messageGasLimit();
+        assertEq(gasLimit, newMessageGasLimit); 
+    }
+
+    function testAdminCanSetMessageData() public{ 
+        string memory newMessageData = "test";
+        vm.expectEmit(false, false, false, true);
+        emit MessageData(
+           newMessageData
+        );
+        vm.prank(CCIPSENDER_ADMIN);
+        CCIPSENDER_CONTRACT.setMessageData(newMessageData);
+        string memory messageData = CCIPSENDER_CONTRACT.messageData();
+        assertEq(messageData , newMessageData); 
     }
     function testAdminCanSetFeePaymentMethod() public{
         vm.prank(CCIPSENDER_ADMIN);

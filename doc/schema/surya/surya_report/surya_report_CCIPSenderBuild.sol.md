@@ -16,10 +16,10 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **CCIPSenderBuild** | Implementation | CCIPSenderPayment |||
-| └ | _buildCCIPMessage | Internal 🔒 |   | |
-| └ | _buildCCIPTransferMessage | Internal 🔒 |   | |
-| └ | buildCCIPTransferMessage | Public ❗️ |   |NO❗️ |
 | └ | buildTokenAmounts | Public ❗️ |   |NO❗️ |
+| └ | buildCCIPTransferMessage | Public ❗️ |   |NO❗️ |
+| └ | _buildCCIPMessage | Public ❗️ |   |NO❗️ |
+| └ | _buildCCIPTransferMessage | Public ❗️ |   |NO❗️ |
 
 
 ### Legend

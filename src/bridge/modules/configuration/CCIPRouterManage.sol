@@ -1,6 +1,7 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 import {IRouterClient} from "ccip/interfaces/IRouterClient.sol";
+import {Client} from "ccip/libraries/Client.sol";
 import "../libraries/CCIPErrors.sol";
 
 /// @title CCIPReceiver - Base contract for CCIP applications that can receive messages.
@@ -27,6 +28,12 @@ abstract contract CCIPRouterManage  {
         uint64 chainSelector
     ) external view returns (address[] memory tokens) {
       tokens = IRouterClient(i_router).getSupportedTokens(chainSelector);
+    }
+
+    function getFee(uint64 _destinationChainSelector, Client.EVM2AnyMessage memory message ) public view returns(uint256){
+        // external call
+        uint256 fees = IRouterClient(i_router).getFee(_destinationChainSelector, message);
+        return fees;
     }
 
   /// @dev only calls from the set router are accepted.

@@ -17,7 +17,6 @@
 ||||||
 | **AuthorizationModule** | Implementation | AccessControl |||
 | └ | hasRole | Public ❗️ |   |NO❗️ |
-| └ | supportsInterface | Public ❗️ |   |NO❗️ |
 
 
 ### Legend

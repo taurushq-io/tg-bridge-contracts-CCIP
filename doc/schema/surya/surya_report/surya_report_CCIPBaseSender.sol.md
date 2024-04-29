@@ -16,9 +16,9 @@
 |     └      |  **Function Name**  |  **Visibility**  |  **Mutability**  |  **Modifiers**  |
 ||||||
 | **CCIPBaseSender** | Implementation | CCIPAllowlistedChain, CCIPSenderBuild, CCIPRouterManage |||
-| └ | transferTokens | External ❗️ | 🛑  | onlyRole |
-| └ | transferTokensBatch | External ❗️ | 🛑  | onlyRole |
-| └ | buildEndSend | Internal 🔒 | 🛑  | |
+| └ | transferTokens | External ❗️ | 🛑  | onlyRole onlyAllowlistedDestinationChain |
+| └ | transferTokensBatch | External ❗️ | 🛑  | onlyRole onlyAllowlistedDestinationChain |
+| └ | _buildEndSend | Internal 🔒 | 🛑  | |
 
 
 ### Legend
