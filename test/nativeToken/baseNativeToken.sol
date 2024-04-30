@@ -20,8 +20,6 @@ contract baseTest is HelperContract {
         );
         erc20 = new ERC20Mock();
     }
- 
-
     /*********** CCIPSender Payment ***********/
 
     function testCanAdminSetTokenNativeAsFee() public{
@@ -76,12 +74,7 @@ contract baseTest is HelperContract {
         CCIPSENDER_CONTRACT.withdrawNativeTokens(RECEIVER_ADDRESS, 0 ether);
     }
 
-
-
-
     /****Build token amounts */
-
-
     function testCanBuildCCIPTransferMessageForOneTokenWithNativeTokens() public{
         // Arrange
         uint256 value = 1000;

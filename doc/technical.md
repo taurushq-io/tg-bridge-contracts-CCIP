@@ -26,7 +26,7 @@ setAllowlistChain(6433500567565415381, true, true)
 
 ### Authorize user to use the contracts
 
-Our function `transferTokens` from our sender contract is protected by an access control. Only authorized user can transfer tokens. Therefore we will authorize our
+Our function `transferTokens` from our sender contract is protected by an access control. Only authorized user can transfer tokens. Therefore we have to authorize each users by granting them the role `BRIDGE_USER_ROLE' 
 
 ```solidity
 grantRole(bytes32 role, address account)

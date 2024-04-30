@@ -7,12 +7,6 @@ import "openzeppelin-contracts/access/AccessControl.sol";
 
 abstract contract AuthorizationModule is AccessControl{
     /**
-    * @notice Manage the failed message and transfer tokens if necessary.
-    * @dev used by CCCIP Receiver Defensive
-    */
-    bytes32 public constant BRIDGE_MESSAGE_MANAGER = keccak256("BRIDGE_MESSAGE_MANAGER");
-
-    /**
     * @notice Can manage the different chain allowed by our bridge
     */
     bytes32 public constant BRIDGE_ALLOWLISTED_CHAIN_MANAGER_ROLE = keccak256("BRIDGE_ALLOWLISTED_CHAIN_MANAGER_ROLE");
