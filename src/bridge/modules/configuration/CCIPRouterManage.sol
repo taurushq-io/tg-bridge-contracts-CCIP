@@ -37,6 +37,7 @@ abstract contract CCIPRouterManage  {
     }
 
   /// @dev only calls from the set router are accepted.
+  /// Only useful with a receiver contract
   modifier onlyRouter() {
     if (msg.sender != address(i_router)){
       revert CCIPErrors.CCIP_Router_InvalidRouter(msg.sender);

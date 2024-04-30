@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2024-04-26 14:53:42</td>
+            <td class="headerValue">2024-04-30 10:51:06</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">2</td>
@@ -78,22 +78,22 @@
 <a name="7"><span class="lineNum">       7 </span>                :            :     function buildTokenAmounts(</a>
 <a name="8"><span class="lineNum">       8 </span>                :            :     address[] memory _tokens,</a>
 <a name="9"><span class="lineNum">       9 </span>                :            :     uint256[] memory _amounts) public pure returns (Client.EVMTokenAmount[] memory tokenAmounts){</a>
-<a name="10"><span class="lineNum">      10 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         26 :         if( _tokens.length == 0){</span></a>
+<a name="10"><span class="lineNum">      10 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 13 times"> + </span>]:<span class="lineCov">         28 :         if( _tokens.length == 0){</span></a>
 <a name="11"><span class="lineNum">      11 </span>                :<span class="lineCov">          2 :             revert CCIPErrors.CCIP_SenderBuild_TokensIsEmpty();</span></a>
 <a name="12"><span class="lineNum">      12 </span>                :            :         }</a>
-<a name="13"><span class="lineNum">      13 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 11 times"> + </span>]:<span class="lineCov">         24 :         if(_tokens.length != _amounts.length){</span></a>
+<a name="13"><span class="lineNum">      13 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 12 times"> + </span>]:<span class="lineCov">         26 :         if(_tokens.length != _amounts.length){</span></a>
 <a name="14"><span class="lineNum">      14 </span>                :<span class="lineCov">          2 :             revert CCIPErrors.CCIP_SenderBuild_LengthMismatch();</span></a>
 <a name="15"><span class="lineNum">      15 </span>                :            :         }</a>
-<a name="16"><span class="lineNum">      16 </span>                :<span class="lineCov">         22 :         tokenAmounts = new Client.EVMTokenAmount[](_tokens.length);</span></a>
-<a name="17"><span class="lineNum">      17 </span>                :<span class="lineCov">         61 :         for(uint256 i = 0; i &lt; _tokens.length; ++i ){</span></a>
-<a name="18"><span class="lineNum">      18 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 14 times"> + </span>]:<span class="lineCov">         45 :             if(_tokens[i] == address(0)){</span></a>
+<a name="16"><span class="lineNum">      16 </span>                :<span class="lineCov">         24 :         tokenAmounts = new Client.EVMTokenAmount[](_tokens.length);</span></a>
+<a name="17"><span class="lineNum">      17 </span>                :<span class="lineCov">         66 :         for(uint256 i = 0; i &lt; _tokens.length; ++i ){</span></a>
+<a name="18"><span class="lineNum">      18 </span>        [<span class="branchCov" title="Branch 0 was taken 1 time"> + </span><span class="branchCov" title="Branch 1 was taken 15 times"> + </span>]:<span class="lineCov">         48 :             if(_tokens[i] == address(0)){</span></a>
 <a name="19"><span class="lineNum">      19 </span>                :<span class="lineCov">          2 :                 revert CCIPErrors.CCIP_SenderBuild_Address_Zero_Not_Allowed();</span></a>
 <a name="20"><span class="lineNum">      20 </span>                :            :             }</a>
-<a name="21"><span class="lineNum">      21 </span>                :<span class="lineCov">         42 :             Client.EVMTokenAmount memory tokenAmount = Client.EVMTokenAmount({</span></a>
+<a name="21"><span class="lineNum">      21 </span>                :<span class="lineCov">         45 :             Client.EVMTokenAmount memory tokenAmount = Client.EVMTokenAmount({</span></a>
 <a name="22"><span class="lineNum">      22 </span>                :            :                 token: _tokens[i],</a>
 <a name="23"><span class="lineNum">      23 </span>                :            :                 amount: _amounts[i]</a>
 <a name="24"><span class="lineNum">      24 </span>                :            :             });</a>
-<a name="25"><span class="lineNum">      25 </span>                :<span class="lineCov">         28 :             tokenAmounts[i] = tokenAmount;</span></a>
+<a name="25"><span class="lineNum">      25 </span>                :<span class="lineCov">         30 :             tokenAmounts[i] = tokenAmount;</span></a>
 <a name="26"><span class="lineNum">      26 </span>                :            :         }</a>
 <a name="27"><span class="lineNum">      27 </span>                :            :     } </a>
 <a name="28"><span class="lineNum">      28 </span>                :            : </a>
@@ -107,7 +107,7 @@
 <a name="36"><span class="lineNum">      36 </span>                :            :         Client.EVMTokenAmount[] memory  _tokenAmounts,</a>
 <a name="37"><span class="lineNum">      37 </span>                :            :         uint256 paymentMethodId</a>
 <a name="38"><span class="lineNum">      38 </span>                :            :     ) public view returns (Client.EVM2AnyMessage memory) {</a>
-<a name="39"><span class="lineNum">      39 </span>                :<span class="lineCov">         21 :         return _buildCCIPTransferMessage(_receiver, _tokenAmounts,paymentMethodId );</span></a>
+<a name="39"><span class="lineNum">      39 </span>                :<span class="lineCov">         24 :         return _buildCCIPTransferMessage(_receiver, _tokenAmounts,paymentMethodId );</span></a>
 <a name="40"><span class="lineNum">      40 </span>                :            :     } </a>
 <a name="41"><span class="lineNum">      41 </span>                :            : </a>
 <a name="42"><span class="lineNum">      42 </span>                :            :     /// @notice Construct a CCIP message.</a>
@@ -122,7 +122,7 @@
 <a name="51"><span class="lineNum">      51 </span>                :            :         uint256 gasLimit_,</a>
 <a name="52"><span class="lineNum">      52 </span>                :            :         address feeToken_</a>
 <a name="53"><span class="lineNum">      53 </span>                :            :     ) public pure returns (Client.EVM2AnyMessage memory) {</a>
-<a name="54"><span class="lineNum">      54 </span>                :<span class="lineCov">         48 :         return Client.EVM2AnyMessage({</span></a>
+<a name="54"><span class="lineNum">      54 </span>                :<span class="lineCov">         54 :         return Client.EVM2AnyMessage({</span></a>
 <a name="55"><span class="lineNum">      55 </span>                :            :             receiver: abi.encode(_receiver),</a>
 <a name="56"><span class="lineNum">      56 </span>                :            :             data: abi.encode(_text),</a>
 <a name="57"><span class="lineNum">      57 </span>                :            :             tokenAmounts: _tokenAmounts,</a>
@@ -143,13 +143,13 @@
 <a name="72"><span class="lineNum">      72 </span>                :            :         Client.EVMTokenAmount[] memory  _tokenAmounts,</a>
 <a name="73"><span class="lineNum">      73 </span>                :            :         uint256 paymentMethodId</a>
 <a name="74"><span class="lineNum">      74 </span>                :            :     ) public view returns (Client.EVM2AnyMessage memory) {</a>
-<a name="75"><span class="lineNum">      75 </span>                :<span class="lineCov">         38 :         address feeToken = address(0);</span></a>
-<a name="76"><span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 0 was taken 16 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">         19 :         if(paymentTokens[paymentMethodId].isActivate){</span></a>
-<a name="77"><span class="lineNum">      77 </span>                :<span class="lineCov">         32 :             feeToken = address(paymentTokens[paymentMethodId].tokenAddress);</span></a>
+<a name="75"><span class="lineNum">      75 </span>                :<span class="lineCov">         42 :         address feeToken = address(0);</span></a>
+<a name="76"><span class="lineNum">      76 </span>        [<span class="branchCov" title="Branch 0 was taken 18 times"> + </span><span class="branchCov" title="Branch 1 was taken 3 times"> + </span>]:<span class="lineCov">         21 :         if(paymentTokens[paymentMethodId].isActivate){</span></a>
+<a name="77"><span class="lineNum">      77 </span>                :<span class="lineCov">         36 :             feeToken = address(paymentTokens[paymentMethodId].tokenAddress);</span></a>
 <a name="78"><span class="lineNum">      78 </span>                :            :         } else {</a>
 <a name="79"><span class="lineNum">      79 </span>                :<span class="lineCov">          6 :             revert CCIPErrors.CCIP_SenderBuild_InvalidFeeId();</span></a>
 <a name="80"><span class="lineNum">      80 </span>                :            :         }</a>
-<a name="81"><span class="lineNum">      81 </span>                :<span class="lineCov">         48 :         return _buildCCIPMessage(_receiver, messageData, _tokenAmounts, messageGasLimit, feeToken);</span></a>
+<a name="81"><span class="lineNum">      81 </span>                :<span class="lineCov">         54 :         return _buildCCIPMessage(_receiver, messageData, _tokenAmounts, messageGasLimit, feeToken);</span></a>
 <a name="82"><span class="lineNum">      82 </span>                :            :     }</a>
 <a name="83"><span class="lineNum">      83 </span>                :            : }</a>
 </pre>

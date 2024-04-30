@@ -6,15 +6,6 @@ import "openzeppelin-contracts/access/AccessControl.sol";
 
 
 abstract contract AuthorizationModule is AccessControl{
-    // MintModule
-    bytes32 public constant VALIDATOR_ROLE = keccak256("VALIDATOR_ROLE");
-    // PauseModule
-    bytes32 public constant PAUSER_ROLE = keccak256("PAUSER_ROLE");
-
-
-    bytes32 public constant ROUTER_ROLE = keccak256("ROUTEUR_ROLE");
-
-    /**  Confirmed **/
     /**
     * @notice Manage the failed message and transfer tokens if necessary.
     * @dev used by CCCIP Receiver Defensive

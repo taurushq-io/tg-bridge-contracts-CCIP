@@ -37,7 +37,7 @@
           </tr>
           <tr>
             <td class="headerItem">Date:</td>
-            <td class="headerValue">2024-04-26 14:53:42</td>
+            <td class="headerValue">2024-04-30 10:51:06</td>
             <td></td>
             <td class="headerItem">Functions:</td>
             <td class="headerCovTableEntry">3</td>
@@ -89,7 +89,7 @@
 <a name="18"><span class="lineNum">      18 </span>                :            :   /// @notice Return the current router</a>
 <a name="19"><span class="lineNum">      19 </span>                :            :   /// @return i_router address</a>
 <a name="20"><span class="lineNum">      20 </span>                :            :   function getRouter() public view returns (address) {</a>
-<a name="21"><span class="lineNum">      21 </span>                :<span class="lineCov">         39 :     return address(i_router);</span></a>
+<a name="21"><span class="lineNum">      21 </span>                :<span class="lineCov">         42 :     return address(i_router);</span></a>
 <a name="22"><span class="lineNum">      22 </span>                :            :   }</a>
 <a name="23"><span class="lineNum">      23 </span>                :            :     /**</a>
 <a name="24"><span class="lineNum">      24 </span>                :            :     * @param chainSelector blockchain selector</a>
@@ -108,13 +108,14 @@
 <a name="37"><span class="lineNum">      37 </span>                :            :     }</a>
 <a name="38"><span class="lineNum">      38 </span>                :            : </a>
 <a name="39"><span class="lineNum">      39 </span>                :            :   /// @dev only calls from the set router are accepted.</a>
-<a name="40"><span class="lineNum">      40 </span>                :            :   modifier onlyRouter() {</a>
-<a name="41"><span class="lineNum">      41 </span>                :            :     if (msg.sender != address(i_router)){</a>
-<a name="42"><span class="lineNum">      42 </span>                :            :       revert CCIPErrors.CCIP_Router_InvalidRouter(msg.sender);</a>
-<a name="43"><span class="lineNum">      43 </span>                :            :     } </a>
-<a name="44"><span class="lineNum">      44 </span>                :            :     _;</a>
-<a name="45"><span class="lineNum">      45 </span>                :            :   }</a>
-<a name="46"><span class="lineNum">      46 </span>                :            : }</a>
+<a name="40"><span class="lineNum">      40 </span>                :            :   /// Only useful with a receiver contract</a>
+<a name="41"><span class="lineNum">      41 </span>                :            :   modifier onlyRouter() {</a>
+<a name="42"><span class="lineNum">      42 </span>                :            :     if (msg.sender != address(i_router)){</a>
+<a name="43"><span class="lineNum">      43 </span>                :            :       revert CCIPErrors.CCIP_Router_InvalidRouter(msg.sender);</a>
+<a name="44"><span class="lineNum">      44 </span>                :            :     } </a>
+<a name="45"><span class="lineNum">      45 </span>                :            :     _;</a>
+<a name="46"><span class="lineNum">      46 </span>                :            :   }</a>
+<a name="47"><span class="lineNum">      47 </span>                :            : }</a>
 </pre>
       </td>
     </tr>
