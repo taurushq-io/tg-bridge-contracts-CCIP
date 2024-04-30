@@ -7,7 +7,7 @@ import "../utils/router.sol";
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {ERC20Mock} from "openzeppelin-contracts/mocks/token/ERC20Mock.sol";
 import {Client} from "ccip/libraries/Client.sol";
-contract RouterTest is HelperContract {
+contract RouterNativeTest is HelperContract {
     uint256  NATIVE_TOKEN_SELECTION = 0;
     error ERC20InsufficientAllowance(address spender, uint256 allowance, uint256 needed);
     error ERC20InsufficientBalance(address sender, uint256 balance, uint256 needed);

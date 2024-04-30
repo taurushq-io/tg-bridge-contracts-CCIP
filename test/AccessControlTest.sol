@@ -5,7 +5,7 @@ import "forge-std/Test.sol";
 import "./HelperContract.sol";
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {Client} from "ccip/libraries/Client.sol";
-contract baseTest is HelperContract {
+contract AccessControlTest is HelperContract {
      // Arrange
     function setUp() public {
         // Deploy CCIP Sender

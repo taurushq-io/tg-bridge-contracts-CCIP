@@ -6,7 +6,7 @@ import "../HelperContract.sol";
 import {IERC20} from "ccip-v08/vendor/openzeppelin-solidity/v4.8.3/contracts/token/ERC20/IERC20.sol";
 import {ERC20Mock} from "openzeppelin-contracts/mocks/token/ERC20Mock.sol";
 import {Client} from "ccip/libraries/Client.sol";
-contract baseTest is HelperContract {
+contract BaseNativeTokenTest is HelperContract {
     ERC20Mock private erc20;
     address private ROUTER = address(0x1);
     uint256  NATIVE_TOKEN_SELECTION = 0;
