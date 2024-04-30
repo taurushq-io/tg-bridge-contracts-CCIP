@@ -4,7 +4,7 @@ Please follow <https://changelog.md/> conventions.
 
 
 
-## 1.0.1 - 20240430
+## 1.1.0 - 20240430
 
 - In the version 1.0.0, when fees are paid in native tokens, the function `ccipSend` from the CCIP router was called without the `value`argument.
 
