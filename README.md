@@ -8,6 +8,13 @@
 
 A sender contract serves as an entrypoint between your end user and the router contract from Chainlink. This contract is under your control and can be used to offer more possibility of customization.
 
+Notably, this sender contract allows to:
+
+- Compute and pay the fees for the end-user by pre-funding the contract
+- Offers gasless transfer for end-user through the standard ERC-2771 (meta transactions)
+- Configure which blockchains and fee tokens are available.
+- Configure which users is authorized to use the contract
+
 The sender contract will be the main entrypoint for your user to bridge tokens. It will contain all the logic to transfer tokens and send messages.
 
 More information is available in the [CCIP Chainlink website](https://docs.chain.link/ccip) and in the library CCIP in github [smartcontractkit/ccip](https://github.com/smartcontractkit/ccip)
